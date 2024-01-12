@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\RealEstateAutionManagement\\RealEstateAutionManagement.csproj": {}
+    "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\RealEstateAutionManagement\\RealEstateAutionManagement.csproj": {}
   },
   "projects": {
-    "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Data\\Data.csproj": {
+    "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Data\\Data.csproj",
+        "projectUniqueName": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj",
         "projectName": "Data",
-        "projectPath": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Data\\Data.csproj",
+        "projectPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj",
         "packagesPath": "C:\\Users\\nguye\\.nuget\\packages\\",
-        "outputPath": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Data\\obj\\",
+        "outputPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\nguye\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -93,14 +93,14 @@
         }
       }
     },
-    "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\RealEstateAutionManagement\\RealEstateAutionManagement.csproj": {
+    "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\RealEstateAutionManagement\\RealEstateAutionManagement.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\RealEstateAutionManagement\\RealEstateAutionManagement.csproj",
+        "projectUniqueName": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\RealEstateAutionManagement\\RealEstateAutionManagement.csproj",
         "projectName": "RealEstateAutionManagement",
-        "projectPath": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\RealEstateAutionManagement\\RealEstateAutionManagement.csproj",
+        "projectPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\RealEstateAutionManagement\\RealEstateAutionManagement.csproj",
         "packagesPath": "C:\\Users\\nguye\\.nuget\\packages\\",
-        "outputPath": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\RealEstateAutionManagement\\obj\\",
+        "outputPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\RealEstateAutionManagement\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\nguye\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -117,11 +117,11 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Data\\Data.csproj": {
-                "projectPath": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Data\\Data.csproj"
+              "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj": {
+                "projectPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj"
               },
-              "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Service\\Service.csproj": {
-                "projectPath": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Service\\Service.csproj"
+              "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Service\\Service.csproj": {
+                "projectPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Service\\Service.csproj"
               }
             }
           }
@@ -174,14 +174,14 @@
         }
       }
     },
-    "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Service\\Service.csproj": {
+    "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Service\\Service.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Service\\Service.csproj",
+        "projectUniqueName": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Service\\Service.csproj",
         "projectName": "Service",
-        "projectPath": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Service\\Service.csproj",
+        "projectPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Service\\Service.csproj",
         "packagesPath": "C:\\Users\\nguye\\.nuget\\packages\\",
-        "outputPath": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Service\\obj\\",
+        "outputPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Service\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\nguye\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -198,8 +198,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Data\\Data.csproj": {
-                "projectPath": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Data\\Data.csproj"
+              "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj": {
+                "projectPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj"
               }
             }
           }

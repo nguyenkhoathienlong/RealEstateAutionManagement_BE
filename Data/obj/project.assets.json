@@ -8866,11 +8866,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Data\\Data.csproj",
+      "projectUniqueName": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj",
       "projectName": "Data",
-      "projectPath": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Data\\Data.csproj",
+      "projectPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj",
       "packagesPath": "C:\\Users\\nguye\\.nuget\\packages\\",
-      "outputPath": "D:\\Study Document\\SrcCode VisualStudio\\RealEstateAutionManagement\\Data\\obj\\",
+      "outputPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\nguye\\AppData\\Roaming\\NuGet\\NuGet.Config",
