@@ -20,14 +20,14 @@ namespace Data.Models
         public Guid UserId { get; set; }
     }
 
-    public class NotificationCreateModel : BaseModel
+    public class NotificationCreateModel
     {
         public string? Title { get; set; }
         public string? Description { get; set; }
         public Guid UserId { get; set; }
     }
 
-    public class NotificationUpdateModel : BaseModel
+    public class NotificationUpdateModel
     {
         public string? Title { get; set; }
         public string? Description { get; set; }

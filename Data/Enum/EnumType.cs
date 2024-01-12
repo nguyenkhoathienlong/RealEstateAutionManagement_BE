@@ -12,4 +12,10 @@ namespace Data.Enum
         Female,
         Others
     }
+    public enum Role
+    {
+        Staff,
+        Guest,
+        Member
+    }
 }

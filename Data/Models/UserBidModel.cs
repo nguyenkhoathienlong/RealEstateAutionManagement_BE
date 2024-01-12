@@ -23,7 +23,7 @@ namespace Data.Models
         public Guid AuctionId { get; set; }
     }
 
-    public class UserBidCreateModel : BaseModel
+    public class UserBidCreateModel
     {
         public float BidAmount { get; set; }
         public float BidNumber { get; set; }
@@ -31,7 +31,7 @@ namespace Data.Models
         public Guid AuctionId { get; set; }
     }
 
-    public class UserBidUpdateModel : BaseModel
+    public class UserBidUpdateModel
     {
         public float BidAmount { get; set; }
         public float BidNumber { get; set; }

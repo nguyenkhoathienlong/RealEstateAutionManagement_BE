@@ -1,6 +1,13 @@
 ﻿using Data.EFCore;
+using Data.Entities;
 using Data.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using RealEstateAuctionManagement.Extensions;
+using Service.Core;
+using Service.Utilities;
+using System.Text;
 
 namespace UserManagement.Extensions
 {
@@ -25,32 +32,34 @@ namespace UserManagement.Extensions
 
         public static void AddBusinessServices(this IServiceCollection services)
         {
-
+            services.AddScoped<IJwtUtils, JwtUtils>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ISortHelpers<User>, SortHelper<User>>();
         }
 
-        //public static void ConfigureJWTToken(this IServiceCollection services, JwtModel? model)
-        //{
-        //    services
-        //        .AddAuthentication(op =>
-        //        {
-        //            op.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        //            op.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        //            op.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        //        })
-        //        .AddJwtBearer(options =>
-        //        {
-        //            options.SaveToken = true;
-        //            options.RequireHttpsMetadata = false;
-        //            options.TokenValidationParameters = new TokenValidationParameters()
-        //            {
-        //                ValidateIssuer = true,
-        //                ValidateAudience = true,
-        //                ValidAudience = model?.ValidAudience,
-        //                ValidIssuer = model?.ValidIssuer,
-        //                IssuerSigningKey =
-        //                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(model?.Secret ?? ""))
-        //            };
-        //        });
-        //}
+        public static void ConfigureJWTToken(this IServiceCollection services, JwtModel? model)
+        {
+            services
+                .AddAuthentication(op =>
+                {
+                    op.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    op.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    op.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidAudience = model?.ValidAudience,
+                        ValidIssuer = model?.ValidIssuer,
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(model?.Secret ?? ""))
+                    };
+                });
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace Service.Mapper
         {
             // User
             CreateMap<UserCreateModel, User>();
+            CreateMap<UserRegisterModel, User>();
             CreateMap<User, UserViewModel>();
             CreateMap<UserUpdateModel, User>()
                 .ForAllMembers(opt => opt.Condition((src, des, obj) => obj != null));

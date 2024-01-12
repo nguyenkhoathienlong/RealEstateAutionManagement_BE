@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data.Models
 {
-    public class CategoryModel : BaseModel
+    public class CategoryModel
     {
 
     }
@@ -18,13 +18,13 @@ namespace Data.Models
         public string? Description { get; set; }
     }
 
-    public class CategoryCreateModel : BaseModel
+    public class CategoryCreateModel
     {
         public string? Name { get; set; }
         public string? Description { get; set; }
     }
 
-    public class CategoryUpdateModel : BaseModel
+    public class CategoryUpdateModel
     {
         public string? Name { get; set; }
         public string? Description { get; set; }

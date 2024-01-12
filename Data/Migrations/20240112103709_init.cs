@@ -16,8 +16,8 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     DateCreate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DateUpdate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
@@ -32,8 +32,8 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Key = table.Column<string>(type: "text", nullable: true),
-                    Value = table.Column<string>(type: "text", nullable: true),
+                    Key = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: false),
                     DataUnit = table.Column<int>(type: "integer", nullable: false),
                     DateCreate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DateUpdate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -50,16 +50,16 @@ namespace Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
                     UserName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Password = table.Column<string>(type: "text", nullable: false),
                     Gender = table.Column<int>(type: "integer", nullable: false),
-                    Address = table.Column<string>(type: "text", nullable: true),
-                    IdentityNumber = table.Column<string>(type: "text", nullable: true),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    IdentityNumber = table.Column<string>(type: "text", nullable: false),
                     IdentityCardProvideDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IdentityCardFrontImage = table.Column<string>(type: "text", nullable: true),
-                    IdentityCardBackImage = table.Column<string>(type: "text", nullable: true),
+                    IdentityCardFrontImage = table.Column<string>(type: "text", nullable: false),
+                    IdentityCardBackImage = table.Column<string>(type: "text", nullable: false),
                     Avatar = table.Column<string>(type: "text", nullable: true),
                     Role = table.Column<int>(type: "integer", nullable: false),
                     DateCreate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -124,8 +124,8 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     DateCreate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DateUpdate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -147,8 +147,8 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Address = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false),
                     LinkAttachment = table.Column<string>(type: "text", nullable: true),
                     ApproveTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -180,8 +180,8 @@ namespace Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    RegistrationStartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    RegistrationEndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    RegistrationStartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RegistrationEndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     StartingPrice = table.Column<float>(type: "real", nullable: false),
                     BidIncrement = table.Column<float>(type: "real", nullable: false),
                     MaxBidIncrement = table.Column<float>(type: "real", nullable: false),
@@ -189,7 +189,7 @@ namespace Data.Migrations
                     Deposit = table.Column<float>(type: "real", nullable: false),
                     StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ApproveTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ApproveTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     CreateByUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     ApproveByUserId = table.Column<Guid>(type: "uuid", nullable: false),

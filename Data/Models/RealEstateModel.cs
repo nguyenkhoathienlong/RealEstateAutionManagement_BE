@@ -23,7 +23,7 @@ namespace Data.Models
         public Guid UserId { get; set; }
     }
 
-    public class RealEstateCreateModel : BaseModel
+    public class RealEstateCreateModel
     {
         public string? Name { get; set; }
         public string? Address { get; set; }
@@ -33,7 +33,7 @@ namespace Data.Models
         public Guid UserId { get; set; }
     }
 
-    public class RealEstateUpdateModel : BaseModel
+    public class RealEstateUpdateModel
     {
         public string? Name { get; set; }
         public string? Address { get; set; }

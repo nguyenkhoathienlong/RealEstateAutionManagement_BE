@@ -19,14 +19,14 @@ namespace Data.Models
         public string? Image { get; set; }
     }
 
-    public class FeedbackCreateModel : BaseModel
+    public class FeedbackCreateModel
     {
         public string? Name { get; set; }
         public string? Description { get; set; }
         public string? Image { get; set; }
     }
 
-    public class FeedbackUpdateModel : BaseModel
+    public class FeedbackUpdateModel
     {
         public string? Name { get; set; }
         public string? Description { get; set; }
