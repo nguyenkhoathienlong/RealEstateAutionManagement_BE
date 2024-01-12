@@ -8,8 +8,8 @@ namespace Data.Entities
 {
     public class Category : BaseEntities
     {
-        public string? Name { get; set; }
-        public string? Description { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
 
 
         //relationship

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class UserBid : BaseEntities
+    public class UserBid: BaseEntities
     {
         public float BidAmount { get; set; }
         public float BidNumber { get; set; }
@@ -15,7 +15,7 @@ namespace Data.Entities
         //relationship
         public Guid UserId { get; set; }
         [ForeignKey("UserId")]
-        public User? Users { get; set; }
+        public User Users { get; set; }
         public Guid AuctionId { get; set; }
         [ForeignKey("AuctionId")]
         public Auction? Auctions { get; set; }

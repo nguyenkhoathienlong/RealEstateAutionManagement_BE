@@ -11,17 +11,17 @@ namespace Data.Entities
     public class BankAccount : BaseEntities
     {
         [Required]
-        public string? BankAccountNumber { get; set; }
+        public string BankAccountNumber { get; set; }
         [Required]
-        public string? BankAccountName { get; set; }
+        public string BankAccountName { get; set; }
         [Required]
-        public string? BankName { get; set; }
+        public string BankName { get; set; }
         [Required]
         public int BankAccountType { get; set; }
 
         //relationship
         public Guid UserId { get; set; }
         [ForeignKey("UserId")]
-        public User? Users { get; set; }
+        public User Users { get; set; }
     }
 }

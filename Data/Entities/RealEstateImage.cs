@@ -15,6 +15,6 @@ namespace Data.Entities
         //relationship
         public Guid RealEstateId { get; set; }
         [ForeignKey("RealEstateId")]
-        public RealEstate? RealEstates { get; set; }
+        public RealEstate RealEstates { get; set; }
     }
 }
