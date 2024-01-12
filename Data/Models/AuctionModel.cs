@@ -33,7 +33,7 @@ namespace Data.Models
         public Guid RealEstateId { get; set; }
     }
 
-    public class AuctionCreateModel : BaseModel
+    public class AuctionCreateModel
     {
         public string? Description { get; set; }
         public DateTime RegistrationStartDate { get; set; }
@@ -52,7 +52,7 @@ namespace Data.Models
         public Guid RealEstateId { get; set; }
     }
 
-    public class AuctionUpdateModel : BaseModel
+    public class AuctionUpdateModel
     {
         public string? Description { get; set; }
         public DateTime RegistrationStartDate { get; set; }

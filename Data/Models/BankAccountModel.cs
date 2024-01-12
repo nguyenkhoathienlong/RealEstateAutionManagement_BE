@@ -23,7 +23,7 @@ namespace Data.Models
         public Guid UserId { get; set; }
     }
 
-    public class BankAccountCreateModel : BaseModel
+    public class BankAccountCreateModel
     {
         public string BankAccountNumber { get; set; } = null!;
         public string BankAccountName { get; set; } = null!;
@@ -32,7 +32,7 @@ namespace Data.Models
         public Guid UserId { get; set; }
     }
 
-    public class BankAccountUpdateModel : BaseModel
+    public class BankAccountUpdateModel
     {
         public string BankAccountNumber { get; set; } = null!;
         public string BankAccountName { get; set; } = null!;

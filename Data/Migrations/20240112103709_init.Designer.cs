@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240112090715_init")]
+    [Migration("20240112103709_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -34,7 +34,7 @@ namespace Data.Migrations
                     b.Property<Guid>("ApproveByUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("ApproveTime")
+                    b.Property<DateTime?>("ApproveTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<float>("BidIncrement")
@@ -67,13 +67,13 @@ namespace Data.Migrations
                     b.Property<Guid>("RealEstateId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("RegistrationEndDate")
+                    b.Property<DateTime>("RegistrationEndDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<float>("RegistrationFee")
                         .HasColumnType("real");
 
-                    b.Property<DateTime?>("RegistrationStartDate")
+                    b.Property<DateTime>("RegistrationStartDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("StartDate")
@@ -149,12 +149,14 @@ namespace Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -209,12 +211,14 @@ namespace Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
@@ -234,6 +238,7 @@ namespace Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("ApproveTime")
@@ -255,6 +260,7 @@ namespace Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
@@ -316,9 +322,11 @@ namespace Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Key")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Value")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -372,6 +380,7 @@ namespace Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Avatar")
@@ -384,21 +393,25 @@ namespace Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Gender")
                         .HasColumnType("integer");
 
                     b.Property<string>("IdentityCardBackImage")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("IdentityCardFrontImage")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("IdentityCardProvideDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("IdentityNumber")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
@@ -414,6 +427,7 @@ namespace Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasMaxLength(13)
                         .HasColumnType("character varying(13)");
 

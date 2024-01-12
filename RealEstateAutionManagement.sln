@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAutionManagement", "RealEstateAutionManagement\RealEstateAutionManagement.csproj", "{B606F336-F8F3-4E5F-B969-731B14C4CC0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RealEstateAuctionManagement", "RealEstateAutionManagement\RealEstateAuctionManagement.csproj", "{B606F336-F8F3-4E5F-B969-731B14C4CC0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{E2BBEA45-8C86-47DA-B00E-674CFCA8488D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{E2BBEA45-8C86-47DA-B00E-674CFCA8488D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{53B67400-05DD-4759-9684-D8721495B579}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.csproj", "{53B67400-05DD-4759-9684-D8721495B579}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

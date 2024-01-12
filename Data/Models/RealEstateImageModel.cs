@@ -19,13 +19,13 @@ namespace Data.Models
         public Guid RealEstateId { get; set; }
     }
 
-    public class RealEstateImageCreateModel : BaseModel
+    public class RealEstateImageCreateModel
     {
         public string Image { get; set; } = null!;
         public Guid RealEstateId { get; set; }
     }
 
-    public class RealEstateImageUpdateModel : BaseModel
+    public class RealEstateImageUpdateModel
     {
         public string Image { get; set; } = null!;
         public Guid RealEstateId { get; set; }

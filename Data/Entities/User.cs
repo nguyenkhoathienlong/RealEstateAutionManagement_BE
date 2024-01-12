@@ -38,7 +38,7 @@ namespace Data.Entities
         public string IdentityCardBackImage { get; set; } = null!;
         public string? Avatar { get; set; }
         [Required]
-        public int Role { get; set; }
+        public Role Role { get; set; } = Role.Member;
         [Required]
         public int Status { get; set; }
 

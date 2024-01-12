@@ -20,14 +20,14 @@ namespace Data.Models
         public int DataUnit { get; set; }
     }
 
-    public class SettingCreateModel : BaseModel
+    public class SettingCreateModel
     {
         public string Key { get; set; } = null!;
         public string Value { get; set; } = null!;
         public int DataUnit { get; set; }
     }
 
-    public class SettingUpdateModel : BaseModel
+    public class SettingUpdateModel
     {
         public string Key { get; set; } = null!;
         public string Value { get; set; } = null!;

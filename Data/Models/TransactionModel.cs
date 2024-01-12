@@ -24,7 +24,7 @@ namespace Data.Models
         public Guid? UserBidId { get; set; }
     }
 
-    public class TransactionCreateModel : BaseModel
+    public class TransactionCreateModel
     {
         public float Amount { get; set; }
         public int PaymentMethod { get; set; }
@@ -34,7 +34,7 @@ namespace Data.Models
         public Guid? UserBidId { get; set; }
     }
 
-    public class TransactionUpdateModel : BaseModel
+    public class TransactionUpdateModel
     {
         public float Amount { get; set; }
         public int PaymentMethod { get; set; }
