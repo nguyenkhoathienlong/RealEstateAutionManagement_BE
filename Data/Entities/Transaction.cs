@@ -12,14 +12,15 @@ namespace Data.Entities
         public float Amount { get; set; }
         public int PaymentMethod { get; set; }
         public int Type { get; set; }
+        public int Status { get; set; }
 
         //relationship
         public Guid UserId { get; set; }
         [ForeignKey("UserId")]
-        public User Users { get; set; }
-        public Guid UserBidId { get; set; }
+        public User Users { get; set; } = null!;
+        public Guid? UserBidId { get; set; }
         [ForeignKey("UserBidId")]
-        public UserBid UserBid { get; set; }
+        public UserBid? UserBid { get; set; }
 
     }
 }

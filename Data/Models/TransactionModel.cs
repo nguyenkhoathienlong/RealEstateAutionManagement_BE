@@ -19,8 +19,9 @@ namespace Data.Models
         public float Amount { get; set; }
         public int PaymentMethod { get; set; }
         public int Type { get; set; }
+        public int Status { get; set; }
         public Guid UserId { get; set; }
-        public Guid UserBidId { get; set; }
+        public Guid? UserBidId { get; set; }
     }
 
     public class TransactionCreateModel : BaseModel
@@ -28,8 +29,9 @@ namespace Data.Models
         public float Amount { get; set; }
         public int PaymentMethod { get; set; }
         public int Type { get; set; }
+        public int Status { get; set; }
         public Guid UserId { get; set; }
-        public Guid UserBidId { get; set; }
+        public Guid? UserBidId { get; set; }
     }
 
     public class TransactionUpdateModel : BaseModel
@@ -37,8 +39,9 @@ namespace Data.Models
         public float Amount { get; set; }
         public int PaymentMethod { get; set; }
         public int Type { get; set; }
+        public int Status { get; set; }
         public Guid UserId { get; set; }
-        public Guid UserBidId { get; set; }
+        public Guid? UserBidId { get; set; }
         [JsonIgnore]
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;
     }

@@ -28,6 +28,7 @@ namespace Data.Models
         public string? IdentityCardBackImage { get; set; }
         public string? Avatar { get; set; }
         public int Role { get; set; }
+        public int Status { get; set; }
     }
 
     public class UserCreateModel : BaseModel
@@ -45,6 +46,7 @@ namespace Data.Models
         public string? IdentityCardBackImage { get; set; }
         public string? Avatar { get; set; }
         public int Role { get; set; }
+        public int Status { get; set; }
     }
 
     public class UserUpdateModel : BaseModel
@@ -62,6 +64,7 @@ namespace Data.Models
         public string? IdentityCardBackImage { get; set; }
         public string? Avatar { get; set; }
         public int Role { get; set; }
+        public int Status { get; set; }
         [JsonIgnore]
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;
     }

@@ -14,7 +14,7 @@ namespace Data.Entities
         public DateTime RegistrationEndDate { get; set; }
         public float StartingPrice { get; set; }
         public float BidIncrement { get; set; }
-        public float MaxBidIncrement { get; set; }
+        public float? MaxBidIncrement { get; set; }
         public float RegistrationFee { get; set; }
         public float Deposit { get; set; }
         public DateTime StartDate { get; set; }
@@ -26,12 +26,12 @@ namespace Data.Entities
         //relationship
         public Guid CreateByUserId { get; set; }
         [ForeignKey("CreateByUserId")]
-        public User CreatedByUser { get; set; }
-        public Guid ApproveByUserId { get; set; }
+        public User CreatedByUser { get; set; } = null!;
+        public Guid? ApproveByUserId { get; set; }
         [ForeignKey("ApproveByUserId")]
-        public User ApprovedByUser { get; set; }
+        public User? ApprovedByUser { get; set; }
         public Guid RealEstateId { get; set; }
         [ForeignKey("RealEstateId")]
-        public RealEstate RealEstates { get; set; }
+        public RealEstate RealEstates { get; set; } = null!;
     }
 }

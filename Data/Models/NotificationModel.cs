@@ -15,22 +15,22 @@ namespace Data.Models
 
     public class NotificationViewModel : BaseModel
     {
-        public string? Title { get; set; }
-        public string? Description { get; set; }
+        public string Title { get; set; } = null!;
+        public string Description { get; set; } = null!;
         public Guid UserId { get; set; }
     }
 
     public class NotificationCreateModel : BaseModel
     {
-        public string? Title { get; set; }
-        public string? Description { get; set; }
+        public string Title { get; set; } = null!;
+        public string Description { get; set; } = null!;
         public Guid UserId { get; set; }
     }
 
     public class NotificationUpdateModel : BaseModel
     {
-        public string? Title { get; set; }
-        public string? Description { get; set; }
+        public string Title { get; set; } = null!;
+        public string Description { get; set; } = null!;
         public Guid UserId { get; set; }
         [JsonIgnore]
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;

@@ -9,12 +9,12 @@ namespace Data.Entities
 {
     public class RealEstateImage : BaseEntities
     {
-        public string? Image { get; set; }
+        public string Image { get; set; } = null!;
 
 
         //relationship
         public Guid RealEstateId { get; set; }
         [ForeignKey("RealEstateId")]
-        public RealEstate RealEstates { get; set; }
+        public RealEstate RealEstates { get; set; } = null!;
     }
 }

@@ -14,23 +14,23 @@ namespace Data.Models
 
     public class FeedbackViewModel : BaseModel
     {
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-        public string? Image { get; set; }
+        public string Title { get; set; } = null!;
+        public string Description { get; set; } = null!;
+        //public string? Image { get; set; }
     }
 
     public class FeedbackCreateModel : BaseModel
     {
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-        public string? Image { get; set; }
+        public string Title { get; set; } = null!;
+        public string Description { get; set; } = null!;
+        //public string? Image { get; set; }
     }
 
     public class FeedbackUpdateModel : BaseModel
     {
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-        public string? Image { get; set; }
+        public string Title { get; set; } = null!;
+        public string Description { get; set; } = null!;
+        //public string? Image { get; set; }
         [JsonIgnore]
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;
     }

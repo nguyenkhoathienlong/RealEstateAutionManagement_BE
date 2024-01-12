@@ -14,20 +14,20 @@ namespace Data.Models
 
     public class CategoryViewModel : BaseModel
     {
-        public string? Name { get; set; }
-        public string? Description { get; set; }
+        public string Name { get; set; } = null!;
+        public string Description { get; set; } = null!;
     }
 
     public class CategoryCreateModel : BaseModel
     {
-        public string? Name { get; set; }
-        public string? Description { get; set; }
+        public string Name { get; set; } = null!;
+        public string Description { get; set; } = null!;
     }
 
     public class CategoryUpdateModel : BaseModel
     {
-        public string? Name { get; set; }
-        public string? Description { get; set; }
+        public string Name { get; set; } = null!;
+        public string Description { get; set; } = null!;
         [JsonIgnore]
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;
     }

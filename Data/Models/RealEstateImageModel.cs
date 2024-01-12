@@ -15,19 +15,19 @@ namespace Data.Models
 
     public class RealEstateImageViewModel : BaseModel
     {
-        public string? Image { get; set; }
+        public string Image { get; set; } = null!;
         public Guid RealEstateId { get; set; }
     }
 
     public class RealEstateImageCreateModel : BaseModel
     {
-        public string? Image { get; set; }
+        public string Image { get; set; } = null!;
         public Guid RealEstateId { get; set; }
     }
 
     public class RealEstateImageUpdateModel : BaseModel
     {
-        public string? Image { get; set; }
+        public string Image { get; set; } = null!;
         public Guid RealEstateId { get; set; }
         [JsonIgnore]
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;

@@ -9,20 +9,20 @@ namespace Data.Entities
 {
     public class RealEstate : BaseEntities
     {
-        public string Name { get; set; }
-        public string Address { get; set; }
+        public string Name { get; set; } = null!;
+        public string Address { get; set; } = null!;
         public string? LinkAttachment { get; set; }
-        public DateTime ApproveTime { get; set; }
+        public DateTime? ApproveTime { get; set; }
 
 
         //relationship
-        public IList<Auction> Auctions { get; set; }
-        public IList<RealEstateImage> RealEstateImages { get; set; }
+        public IList<Auction> Auctions { get; set; } = null!;
+        public IList<RealEstateImage> RealEstateImages { get; set; } = null!;
         public Guid CategoryId { get; set; }
         [ForeignKey("CategoryId")]
-        public Category Categories { get; set; }
+        public Category Categories { get; set; } = null!;
         public Guid UserId { get; set; }
         [ForeignKey("UserId")]
-        public User Users { get; set; }
+        public User Users { get; set; } = null!;
     }
 }

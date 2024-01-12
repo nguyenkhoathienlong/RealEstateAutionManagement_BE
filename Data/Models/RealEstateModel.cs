@@ -15,30 +15,30 @@ namespace Data.Models
 
     public class RealEstateViewModel : BaseModel
     {
-        public string? Name { get; set; }
-        public string? Address { get; set; }
+        public string Name { get; set; } = null!;
+        public string Address { get; set; } = null!;
         public string? LinkAttachment { get; set; }
-        public DateTime ApproveTime { get; set; }
+        public DateTime? ApproveTime { get; set; }
         public Guid CategoryId { get; set; }
         public Guid UserId { get; set; }
     }
 
     public class RealEstateCreateModel : BaseModel
     {
-        public string? Name { get; set; }
-        public string? Address { get; set; }
+        public string Name { get; set; } = null!;
+        public string Address { get; set; } = null!;
         public string? LinkAttachment { get; set; }
-        public DateTime ApproveTime { get; set; }
+        public DateTime? ApproveTime { get; set; }
         public Guid CategoryId { get; set; }
         public Guid UserId { get; set; }
     }
 
     public class RealEstateUpdateModel : BaseModel
     {
-        public string? Name { get; set; }
-        public string? Address { get; set; }
+        public string Name { get; set; } = null!;
+        public string Address { get; set; } = null!;
         public string? LinkAttachment { get; set; }
-        public DateTime ApproveTime { get; set; }
+        public DateTime? ApproveTime { get; set; }
         public Guid CategoryId { get; set; }
         public Guid UserId { get; set; }
         [JsonIgnore]

@@ -16,27 +16,27 @@ namespace Data.Models
 
     public class BankAccountViewModel : BaseModel
     {
-        public string BankAccountNumber { get; set; }
-        public string BankAccountName { get; set; }
-        public string BankName { get; set; }
+        public string BankAccountNumber { get; set; } = null!;
+        public string BankAccountName { get; set; } = null!;
+        public string BankName { get; set; } = null!;
         public int BankAccountType { get; set; }
         public Guid UserId { get; set; }
     }
 
     public class BankAccountCreateModel : BaseModel
     {
-        public string BankAccountNumber { get; set; }
-        public string BankAccountName { get; set; }
-        public string BankName { get; set; }
+        public string BankAccountNumber { get; set; } = null!;
+        public string BankAccountName { get; set; } = null!;
+        public string BankName { get; set; } = null!;
         public int BankAccountType { get; set; }
         public Guid UserId { get; set; }
     }
 
     public class BankAccountUpdateModel : BaseModel
     {
-        public string BankAccountNumber { get; set; }
-        public string BankAccountName { get; set; }
-        public string BankName { get; set; }
+        public string BankAccountNumber { get; set; } = null!;
+        public string BankAccountName { get; set; } = null!;
+        public string BankName { get; set; } = null!;
         public int BankAccountType { get; set; }
         public Guid UserId { get; set; }
         [JsonIgnore]

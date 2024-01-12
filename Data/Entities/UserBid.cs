@@ -15,7 +15,7 @@ namespace Data.Entities
         //relationship
         public Guid UserId { get; set; }
         [ForeignKey("UserId")]
-        public User Users { get; set; }
+        public User Users { get; set; } = null!;
         public Guid AuctionId { get; set; }
         [ForeignKey("AuctionId")]
         public Auction? Auctions { get; set; }

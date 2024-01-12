@@ -9,12 +9,12 @@ namespace Data.Entities
 {
     public class Notification : BaseEntities
     {
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public string Title { get; set; } = null!;
+        public string Description { get; set; } = null!;
 
         //relationship
         public Guid UserId { get; set; }
         [ForeignKey("UserId")]
-        public User Users { get; set; }
+        public User Users { get; set; } = null!;
     }
 }
