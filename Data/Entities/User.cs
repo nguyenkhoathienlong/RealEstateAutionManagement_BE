@@ -40,7 +40,7 @@ namespace Data.Entities
         [Required]
         public Role Role { get; set; } = Role.Member;
         [Required]
-        public int Status { get; set; }
+        public UserStatus Status { get; set; } = UserStatus.Inactive;
 
         //relationship
         public IList<Transaction> Transactions { get; set; } = null!;

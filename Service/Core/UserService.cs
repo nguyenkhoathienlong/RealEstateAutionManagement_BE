@@ -52,6 +52,10 @@ namespace Service.Core
                 {
                     throw new AppException(ErrorMessage.InvalidAccount);
                 }
+                if (user.Status == UserStatus.Banned)
+                {
+                    throw new AppException(ErrorMessage.BannedAccount);
+                }
                 if (!BCrypt.Net.BCrypt.Verify(model.Password, user.Password))
                 {
                     throw new AppException(ErrorMessage.InvalidAccount);
@@ -145,9 +149,9 @@ namespace Service.Core
                 .Where(x => !x.IsDeleted);
                 SearchByKeyWord(ref queryData, query.Search);
 
-                var sortData = _sortHelper.ApplySort(queryData, query.OrderBy);
+                var sortData = _sortHelper.ApplySort(queryData, query.OrderBy!);
 
-                var data = sortData.ToPagedList(query.PageIndex, query.PageSize);
+                var data = await sortData.ToPagedListAsync(query.PageIndex, query.PageSize);
 
                 var pagingData = new PagingModel<UserViewModel>()
                 {
@@ -227,7 +231,7 @@ namespace Service.Core
 
         // private method
 
-        private void SearchByKeyWord(ref IQueryable<User> users, string keyword)
+        private void SearchByKeyWord(ref IQueryable<User> users, string? keyword)
         {
             if (!users.Any() || string.IsNullOrWhiteSpace(keyword))
                 return;

@@ -18,4 +18,10 @@ namespace Data.Enum
         Guest,
         Member
     }
+    public enum UserStatus
+    {
+        Active,
+        Inactive,
+        Banned
+    }
 }

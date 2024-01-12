@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Service\\Service.csproj": {}
+    "D:\\HOCTAP\\SWP391\\RealEstateProject\\REAS\\RealEstateAutionManagement_BE\\Service\\Service.csproj": {}
   },
   "projects": {
-    "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj": {
+    "D:\\HOCTAP\\SWP391\\RealEstateProject\\REAS\\RealEstateAutionManagement_BE\\Data\\Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj",
+        "projectUniqueName": "D:\\HOCTAP\\SWP391\\RealEstateProject\\REAS\\RealEstateAutionManagement_BE\\Data\\Data.csproj",
         "projectName": "Data",
-        "projectPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj",
-        "packagesPath": "C:\\Users\\nguye\\.nuget\\packages\\",
-        "outputPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\obj\\",
+        "projectPath": "D:\\HOCTAP\\SWP391\\RealEstateProject\\REAS\\RealEstateAutionManagement_BE\\Data\\Data.csproj",
+        "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
+        "outputPath": "D:\\HOCTAP\\SWP391\\RealEstateProject\\REAS\\RealEstateAutionManagement_BE\\Data\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "D:\\VS_IDE\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\nguye\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -89,21 +93,25 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.202\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Service\\Service.csproj": {
+    "D:\\HOCTAP\\SWP391\\RealEstateProject\\REAS\\RealEstateAutionManagement_BE\\Service\\Service.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Service\\Service.csproj",
+        "projectUniqueName": "D:\\HOCTAP\\SWP391\\RealEstateProject\\REAS\\RealEstateAutionManagement_BE\\Service\\Service.csproj",
         "projectName": "Service",
-        "projectPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Service\\Service.csproj",
-        "packagesPath": "C:\\Users\\nguye\\.nuget\\packages\\",
-        "outputPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Service\\obj\\",
+        "projectPath": "D:\\HOCTAP\\SWP391\\RealEstateProject\\REAS\\RealEstateAutionManagement_BE\\Service\\Service.csproj",
+        "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
+        "outputPath": "D:\\HOCTAP\\SWP391\\RealEstateProject\\REAS\\RealEstateAutionManagement_BE\\Service\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "D:\\VS_IDE\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\nguye\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -117,8 +125,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj": {
-                "projectPath": "D:\\Study Document\\Source GitHub\\RealEstateAutionManagement\\Data\\Data.csproj"
+              "D:\\HOCTAP\\SWP391\\RealEstateProject\\REAS\\RealEstateAutionManagement_BE\\Data\\Data.csproj": {
+                "projectPath": "D:\\HOCTAP\\SWP391\\RealEstateProject\\REAS\\RealEstateAutionManagement_BE\\Data\\Data.csproj"
               }
             }
           }
@@ -176,7 +184,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.202\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }
