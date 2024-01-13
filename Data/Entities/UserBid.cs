@@ -9,8 +9,8 @@ namespace Data.Entities
 {
     public class UserBid: BaseEntities
     {
-        public float BidAmount { get; set; }
-        public float BidNumber { get; set; }
+        public float Amount { get; set; }
+        public bool IsDeposit { get; set; }
 
         //relationship
         public Guid UserId { get; set; }

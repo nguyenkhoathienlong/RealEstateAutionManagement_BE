@@ -17,24 +17,24 @@ namespace Data.Models
 
     public class UserBidViewModel : BaseModel
     {
-        public float BidAmount { get; set; }
-        public float BidNumber { get; set; }
+        public float Amount { get; set; }
+        public bool IsDeposit { get; set; }
         public Guid UserId { get; set; }
         public Guid AuctionId { get; set; }
     }
 
     public class UserBidCreateModel
     {
-        public float BidAmount { get; set; }
-        public float BidNumber { get; set; }
+        public float Amount { get; set; }
+        public bool IsDeposit { get; set; }
         public Guid UserId { get; set; }
         public Guid AuctionId { get; set; }
     }
 
     public class UserBidUpdateModel
     {
-        public float BidAmount { get; set; }
-        public float BidNumber { get; set; }
+        public float Amount { get; set; }
+        public bool IsDeposit { get; set; }
         public Guid UserId { get; set; }
         public Guid AuctionId { get; set; }
         [JsonIgnore]
