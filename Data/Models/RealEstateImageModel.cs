@@ -33,4 +33,13 @@ namespace Data.Models
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;
     }
 
+    public class RealEstateImageQueryModel : QueryStringParameters
+    {
+        public RealEstateImageQueryModel()
+        {
+            OrderBy = "";
+        }
+        public string? Search { get; set; }
+    }
+
 }

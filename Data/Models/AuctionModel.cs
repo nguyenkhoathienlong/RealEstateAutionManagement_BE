@@ -72,4 +72,13 @@ namespace Data.Models
         [JsonIgnore]
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;
     }
+
+    public class AuctionQueryModel : QueryStringParameters
+    {
+        public AuctionQueryModel()
+        {
+            OrderBy = "";
+        }
+        public string? Search { get; set; }
+    }
 }

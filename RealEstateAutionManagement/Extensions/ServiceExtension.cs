@@ -33,8 +33,36 @@ namespace UserManagement.Extensions
         public static void AddBusinessServices(this IServiceCollection services)
         {
             services.AddScoped<IJwtUtils, JwtUtils>();
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ISortHelpers<User>, SortHelper<User>>();
+
+            services.AddScoped<IAuctionService, AuctionService>();
+            services.AddScoped<ISortHelpers<Auction>, SortHelper<Auction>>();
+
+            services.AddScoped<IBankAccountService, BankAccountService>();
+            services.AddScoped<ISortHelpers<BankAccount>, SortHelper<BankAccount>>();
+
+            services.AddScoped<ICategoriesService, CategoriesService>();
+            services.AddScoped<ISortHelpers<Category>, SortHelper<Category>>();
+
+            services.AddScoped<IRealEstateService, RealEstateService>();
+            services.AddScoped<ISortHelpers<RealEstate>, SortHelper<RealEstate>>();
+
+            services.AddScoped<IRealEstateImageService, RealEstateImageService>();
+            services.AddScoped<ISortHelpers<RealEstateImage>, SortHelper<RealEstateImage>>();
+
+            services.AddScoped<ISettingService, SettingService>();
+            services.AddScoped<ISortHelpers<Setting>, SortHelper<Setting>>();
+
+            services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<ISortHelpers<Transaction>, SortHelper<Transaction>>();
+
+            services.AddScoped<IFeedbackService, FeedbackService>();
+            services.AddScoped<ISortHelpers<Feedback>, SortHelper<Feedback>>();
+
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<ISortHelpers<Notification>, SortHelper<Notification>>();
         }
 
         public static void ConfigureJWTToken(this IServiceCollection services, JwtModel? model)
