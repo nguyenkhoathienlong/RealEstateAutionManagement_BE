@@ -38,7 +38,7 @@ namespace Data.Models
         //public List<UserBidViewModel>? UserBids { get; set; }
     }
 
-    public class AuctionCreateModel
+    public class AuctionCreateRequestModel
     {
         [Required]
         public string Description { get; set; } = null!;
@@ -61,6 +61,25 @@ namespace Data.Models
         public DateTime EndDate { get; set; }
 
         [Required]
+        public Guid RealEstateId { get; set; }
+    }
+
+    public class AuctionCreateModel
+    {
+        public string Description { get; set; } = null!;
+        public DateTime? RegistrationStartDate { get; set; }
+        public DateTime? RegistrationEndDate { get; set; }
+        public float StartingPrice { get; set; }
+        public float BidIncrement { get; set; }
+        public float? MaxBidIncrement { get; set; }
+        public float RegistrationFee { get; set; }
+        public float Deposit { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public DateTime? ApproveTime { get; set; }
+        public AuctionStatus Status { get; set; }
+        public Guid CreateByUserId { get; set; }
+        public Guid? ApproveByUserId { get; set; }
         public Guid RealEstateId { get; set; }
     }
 

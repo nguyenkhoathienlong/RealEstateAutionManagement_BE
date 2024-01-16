@@ -32,7 +32,6 @@ namespace RealEstateAuctionManagement.Controllers
             return Ok(result);
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create(AuctionCreateModel model)
         {
@@ -54,9 +53,10 @@ namespace RealEstateAuctionManagement.Controllers
             return Ok(result);
         }
 
-        public async Task<IActionResult> CreateAuctionRequest(AuctionCreateModel model)
+        [Authorize]
+        [HttpPost("create-request")]
+        public async Task<IActionResult> CreateAuctionRequest(AuctionCreateRequestModel model)
         {
-            var result = await _auctionService.Delete(id);
             var userId = User.Claims.GetUserIdFromJwtToken();
             var result = await _auctionService.CreateAuctionRequest(model, userId);
             return Ok(result);

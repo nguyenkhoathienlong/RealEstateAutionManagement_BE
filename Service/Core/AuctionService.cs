@@ -24,7 +24,7 @@ namespace Service.Core
         Task<Guid> Create(AuctionCreateModel auctionCreateModel);
         Task<Guid> Update(Guid id, AuctionUpdateModel model);
         Task<Guid> Delete(Guid id);
-
+        Task<Guid> CreateAuctionRequest(AuctionCreateRequestModel auctionCreateModel, string userId);
     }
 
     public class AuctionService : IAuctionService
@@ -32,7 +32,6 @@ namespace Service.Core
         private readonly DataContext _dataContext;
         private ISortHelpers<Auction> _sortHelper;
         private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
 
         public AuctionService(DataContext dataContext, ISortHelpers<Auction> sortHelper, IMapper mapper)
         {
@@ -147,7 +146,7 @@ namespace Service.Core
             }
         }
 
-        public async Task<Guid> CreateAuctionRequest(AuctionCreateModel auctionCreateModel, string userId)
+        public async Task<Guid> CreateAuctionRequest(AuctionCreateRequestModel auctionCreateModel, string userId)
         {
             try
             {
@@ -186,7 +185,20 @@ namespace Service.Core
                     throw new AppException(ErrorMessage.EndTimeNotLaterThanStartTime);
                 }
 
-                var auction = _mapper.Map<AuctionCreateModel, Auction>(auctionCreateModel);
+                // Check max bid increment
+                if (auctionCreateModel.MaxBidIncrement != null)
+                {
+                    if (auctionCreateModel.MaxBidIncrement < auctionCreateModel.BidIncrement)
+                    {
+                        throw new AppException(ErrorMessage.MaxBidIncrementLessThanBidIncrement);
+                    }
+                    if (auctionCreateModel.MaxBidIncrement % auctionCreateModel.BidIncrement != 0)
+                    {
+                        throw new AppException(ErrorMessage.MaxBidIncrementNotMultipleOfBidIncrement);
+                    }
+                }
+
+                var auction = _mapper.Map<AuctionCreateRequestModel, Auction>(auctionCreateModel);
 
                 // Get percent from settings
                 var registrationFeePercent = float.Parse(_dataContext.Settings.FirstOrDefault(x => x.Key == "REGISTRATION_FEE_PERCENT")?.Value ?? "0") / 100;
@@ -194,8 +206,8 @@ namespace Service.Core
 
                 auction.CreateByUserId = new Guid(userId);
                 auction.Status = AuctionStatus.Pending;
-                auction.RegistrationFee = auction.StartingPrice * registrationFeePercent;
-                auction.Deposit = auction.StartingPrice * depositPercent;
+                auction.RegistrationFee = (float)Math.Round(auction.StartingPrice * registrationFeePercent);
+                auction.Deposit = (float)Math.Round(auction.StartingPrice * depositPercent);
 
                 await _dataContext.Auctions.AddAsync(auction);
                 await _dataContext.SaveChangesAsync();

@@ -35,7 +35,6 @@ namespace UserManagement.Extensions
             services.AddScoped<IJwtUtils, JwtUtils>();
 
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IAuctionService, AuctionService>();
             services.AddScoped<ISortHelpers<User>, SortHelper<User>>();
 
             services.AddScoped<IAuctionService, AuctionService>();

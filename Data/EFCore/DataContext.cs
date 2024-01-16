@@ -43,7 +43,7 @@ namespace Data.EFCore
                 .HasForeignKey(a => a.ApproveByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.SeedSettings();
+            //modelBuilder.SeedSettings();
         }
     }
 }
