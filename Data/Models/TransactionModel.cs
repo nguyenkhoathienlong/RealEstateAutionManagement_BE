@@ -45,4 +45,13 @@ namespace Data.Models
         [JsonIgnore]
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;
     }
+
+    public class TransactionQueryModel : QueryStringParameters
+    {
+        public TransactionQueryModel()
+        {
+            OrderBy = "";
+        }
+        public string? Search { get; set; }
+    }
 }

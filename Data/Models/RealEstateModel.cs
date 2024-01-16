@@ -44,4 +44,13 @@ namespace Data.Models
         [JsonIgnore]
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;
     }
+
+    public class RealEstateQueryModel : QueryStringParameters
+    {
+        public RealEstateQueryModel()
+        {
+            OrderBy = "";
+        }
+        public string? Search { get; set; }
+    }
 }
