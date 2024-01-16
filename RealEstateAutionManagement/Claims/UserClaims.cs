@@ -13,5 +13,11 @@ namespace RealEstateAuctionManagement.Claims
             var userName = claims.FirstOrDefault(claims => claims.Type == ClaimTypes.Name)?.Value;
             return userName ?? "";
         }
+
+        public static string GetUserIdFromJwtToken(this IEnumerable<Claim> claims)
+        {
+            var userId = claims.FirstOrDefault(claims => claims.Type == "id")?.Value;
+            return userId ?? "";
+        }
     }
 }

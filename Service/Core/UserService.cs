@@ -66,6 +66,7 @@ namespace Service.Core
                     .FirstOrDefault();
                 var authClaims = new List<Claim>
                 {
+                    new Claim("id", user.Id.ToString()),
                     new Claim(ClaimTypes.Name, model?.Username ?? ""),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(ClaimTypes.Role, getRole.ToString())

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Data.Entities
 {
     public class Auction : BaseEntities
     {
-        public string? Description { get; set; }
-        public DateTime RegistrationStartDate { get; set; }
-        public DateTime RegistrationEndDate { get; set; }
+        public string Description { get; set; } = null!;
+        public DateTime? RegistrationStartDate { get; set; }
+        public DateTime? RegistrationEndDate { get; set; }
         public float StartingPrice { get; set; }
         public float BidIncrement { get; set; }
         public float? MaxBidIncrement { get; set; }
@@ -20,7 +21,7 @@ namespace Data.Entities
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime? ApproveTime { get; set; }
-        public int Status { get; set; }
+        public AuctionStatus Status { get; set; }
 
 
         //relationship
