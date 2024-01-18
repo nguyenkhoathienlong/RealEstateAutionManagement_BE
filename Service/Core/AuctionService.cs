@@ -233,7 +233,9 @@ namespace Service.Core
         {
             try
             {
-                var auction = await _dataContext.Auctions.FirstOrDefaultAsync(a => a.Id == id);
+                var auction = await _dataContext.Auctions
+                    .Include(x => x.RealEstates)
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
                 if (auction == null)
                 {
                     throw new AppException(ErrorMessage.IdNotExist);
@@ -242,7 +244,7 @@ namespace Service.Core
                 // Check if the auction is pending
                 if (auction.Status != AuctionStatus.Pending)
                 {
-                    throw new AppException("The auction is not pending and cannot be approved.");
+                    throw new AppException(ErrorMessage.AuctionNotPending);
                 }
 
                 if (model.IsApproved)
@@ -279,7 +281,8 @@ namespace Service.Core
                 var notification = new Notification
                 {
                     Title = model.IsApproved ? "Phiên đấu giá đã được duyệt" : "Phiên đấu giá bị từ chối",
-                    Description = model.IsApproved ? "Yêu cầu đấu giá của bạn đã được duyệt." : "Yêu cầu đấu giá của bạn đã bị từ chối do thông tin không phù hợp.",
+                    Description = model.IsApproved ? $"Yêu cầu đấu giá tài sản {auction.RealEstates.Name} của bạn đã được duyệt." 
+                        : $"Yêu cầu đấu giá tài sản {auction.RealEstates.Name} của bạn đã bị từ chối do thông tin không phù hợp.",
                     UserId = auction.CreateByUserId
                 };
 

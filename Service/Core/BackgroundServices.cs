@@ -2,9 +2,13 @@
 using Data.EFCore;
 using Data.Entities;
 using Data.Enum;
+using Hangfire.Server;
+using Hangfire;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Service.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +32,9 @@ namespace Service.Core
 
         public async Task OpenAuction(Guid auctionId)
         {
-            var auction = await _dataContext.Auctions.FirstOrDefaultAsync(a => a.Id == auctionId);
+            var auction = await _dataContext.Auctions
+                .Include(a => a.RealEstates)
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == auctionId);
             if (auction != null && auction.Status == AuctionStatus.Approved)
             {
                 // Check if there are at least two registered users
@@ -46,12 +52,21 @@ namespace Service.Core
                     // Create a notification
                     var notification = new Notification
                     {
-                        Title = "Phiên đấu giá không thành công",
-                        Description = "Không thể mở phiên đấu giá do số lượng người dùng đăng ký không đủ.",
+                        Title = "Phiên đấu giá thất bại",
+                        Description = $"Không thể mở phiên đấu giá tài sản {auction.RealEstates.Name} do số lượng người dùng tham gia không đủ.",
                         UserId = auction.CreateByUserId
                     };
                     _dataContext.Notifications.Add(notification);
                     await _dataContext.SaveChangesAsync();
+
+                    // Cancel close auction job
+                    var closeJobId = KeyValueStore.Instance.Get<string>($"CloseAuctionTask_{auction.Id}");
+                    if (!string.IsNullOrEmpty(closeJobId))
+                    {
+                        _logger.LogInformation("Cancelling close auction job for auctionId: {auctionId} as auction has failed", auctionId);
+                        BackgroundJob.Delete(closeJobId);
+                        KeyValueStore.Instance.Remove($"CloseAuctionTask_{auction.Id}");
+                    }
                 }
 
                 _dataContext.Auctions.Update(auction);
