@@ -22,5 +22,7 @@ namespace Service.Utilities
         public static string RealEstateAlreadyInAuction = "REAL_ESTATE_ALREADY_IN_AUCTION";
         public static string MaxBidIncrementLessThanBidIncrement = "MAX_BID_INCREMENT_LESS_THAN_BID_INCREMENT";
         public static string MaxBidIncrementNotMultipleOfBidIncrement = "MAX_BID_INCREMENT_NOT_MULTIPLE_OF_BID_INCREMENT";
+        public static string ApprovalRequestExpired = "APPROVAL_REQUEST_EXPIRED";
+        public static string RealEstateNotApproved = "REAL_ESTATE_NOT_APPROVED";
     }
 }

@@ -3,6 +3,7 @@ using Data.EFCore;
 using Data.Entities;
 using Data.Enum;
 using Data.Models;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +26,7 @@ namespace Service.Core
         Task<Guid> Update(Guid id, AuctionUpdateModel model);
         Task<Guid> Delete(Guid id);
         Task<Guid> CreateAuctionRequest(AuctionCreateRequestModel auctionCreateModel, string userId);
+        Task<Guid> ApproveAuction(Guid id, ApproveAuctionModel model, string approvedById);
     }
 
     public class AuctionService : IAuctionService
@@ -95,6 +97,7 @@ namespace Service.Core
                 {
                     throw new AppException(ErrorMessage.IdNotExist);
                 }
+
                 return _mapper.Map<Auction, AuctionViewModel>(data);
             }
             catch (Exception e)
@@ -158,6 +161,12 @@ namespace Service.Core
                     throw new AppException(ErrorMessage.RealEstateNotExist);
                 }
 
+                // Check if the real estate is approved
+                if (realEstate.Status != RealEstateStatus.Approved)
+                {
+                    throw new AppException(ErrorMessage.RealEstateNotApproved);
+                }
+
                 // Check if the real estate is already in an auction
                 var existingAuction = await _dataContext.Auctions
                     .Where(x => x.RealEstateId == auctionCreateModel.RealEstateId && x.Status != AuctionStatus.Rejected && x.Status != AuctionStatus.Failed)
@@ -168,7 +177,7 @@ namespace Service.Core
                 }
 
                 // Check if the start date is at least 7 days from now
-                if (auctionCreateModel.StartDate < DateTime.Now.AddDays(7))
+                if (auctionCreateModel.StartDate < DateTime.UtcNow.AddDays(7))
                 {
                     throw new AppException(ErrorMessage.StartDateTooEarly);
                 }
@@ -205,11 +214,76 @@ namespace Service.Core
                 var depositPercent = float.Parse(_dataContext.Settings.FirstOrDefault(x => x.Key == "DEPOSIT_PERCENT")?.Value ?? "0") / 100;
 
                 auction.CreateByUserId = new Guid(userId);
-                auction.Status = AuctionStatus.Pending;
                 auction.RegistrationFee = (float)Math.Round(auction.StartingPrice * registrationFeePercent);
                 auction.Deposit = (float)Math.Round(auction.StartingPrice * depositPercent);
 
                 await _dataContext.Auctions.AddAsync(auction);
+                await _dataContext.SaveChangesAsync();
+
+                return auction.Id;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new AppException(e.Message);
+            }
+        }
+
+        public async Task<Guid> ApproveAuction(Guid id, ApproveAuctionModel model, string approvedById)
+        {
+            try
+            {
+                var auction = await _dataContext.Auctions.FirstOrDefaultAsync(a => a.Id == id);
+                if (auction == null)
+                {
+                    throw new AppException(ErrorMessage.IdNotExist);
+                }
+
+                // Check if the auction is pending
+                if (auction.Status != AuctionStatus.Pending)
+                {
+                    throw new AppException("The auction is not pending and cannot be approved.");
+                }
+
+                if (model.IsApproved)
+                {
+                    // Check if the current date is past the start date of the auction
+                    if (DateTime.UtcNow > auction.StartDate)
+                    {
+                        auction.Status = AuctionStatus.Rejected;
+                        throw new AppException(ErrorMessage.ApprovalRequestExpired);
+                    }
+
+                    auction.Status = AuctionStatus.Approved;
+                    auction.ApproveByUserId = new Guid(approvedById);
+                    auction.ApproveTime = DateTime.UtcNow;
+                    auction.RegistrationStartDate = DateTime.UtcNow;
+                    auction.RegistrationEndDate = auction.StartDate.AddDays(-2);
+
+                    // Schedule task for opening auction
+                    var openJobId = BackgroundJob.Schedule<BackgroundServices>(s => s.OpenAuction(auction.Id), auction.StartDate);
+                    KeyValueStore.Instance.Set($"OpenAuctionTask_{auction.Id}", openJobId);
+
+                    // Schedule a task to close the auction at the end date time
+                    var closeJobId = BackgroundJob.Schedule<BackgroundServices>(s => s.CloseAuction(auction.Id), auction.EndDate);
+                    KeyValueStore.Instance.Set($"CloseAuctionTask_{auction.Id}", closeJobId);
+                }
+                else
+                {
+                    auction.Status = AuctionStatus.Rejected;
+                }
+
+                _dataContext.Auctions.Update(auction);
+                await _dataContext.SaveChangesAsync();
+
+                var notification = new Notification
+                {
+                    Title = model.IsApproved ? "Phiên đấu giá đã được duyệt" : "Phiên đấu giá bị từ chối",
+                    Description = model.IsApproved ? "Yêu cầu đấu giá của bạn đã được duyệt." : "Yêu cầu đấu giá của bạn đã bị từ chối do thông tin không phù hợp.",
+                    UserId = auction.CreateByUserId
+                };
+
+                _dataContext.Notifications.Add(notification);
                 await _dataContext.SaveChangesAsync();
 
                 return auction.Id;

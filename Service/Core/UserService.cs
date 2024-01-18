@@ -60,10 +60,7 @@ namespace Service.Core
                 {
                     throw new AppException(ErrorMessage.InvalidAccount);
                 }
-                var getRole = _dataContext.Users
-                    .Where(x => !x.IsDeleted && x.UserName == model.Username && x.Password == model.Password)
-                    .Select(x => x.Role)
-                    .FirstOrDefault();
+                var getRole = user.Role;
                 var authClaims = new List<Claim>
                 {
                     new Claim("id", user.Id.ToString()),

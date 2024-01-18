@@ -61,5 +61,14 @@ namespace RealEstateAuctionManagement.Controllers
             var result = await _auctionService.CreateAuctionRequest(model, userId);
             return Ok(result);
         }
+
+        [Authorize(Roles = "Staff, Admin")]
+        [HttpPut("{id}/approve")]
+        public async Task<IActionResult> ApproveAuction(Guid id, [FromBody] ApproveAuctionModel model)
+        {
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _auctionService.ApproveAuction(id, model, userId);
+            return Ok(result);
+        }
     }
 }

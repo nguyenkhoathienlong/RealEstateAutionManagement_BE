@@ -16,7 +16,8 @@ namespace Data.Enum
     {
         Staff,
         Guest,
-        Member
+        Member,
+        Admin
     }
     public enum UserStatus
     {
@@ -44,5 +45,11 @@ namespace Data.Enum
         Times = 6,
         Default = 7,
         Vnd = 8
+    }
+    public enum RealEstateStatus
+    {
+        Pending,
+        Approved,
+        Sold
     }
 }

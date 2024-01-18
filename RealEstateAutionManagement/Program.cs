@@ -1,4 +1,5 @@
 using Data.Models;
+using Hangfire;
 using Microsoft.OpenApi.Models;
 using Service.Mapper;
 using UserManagement.Extensions;
@@ -12,6 +13,13 @@ builder.Services.AddAutoMapper(typeof(MapperProfiles));
 builder.Services.AddCors();
 builder.Services.ConfigureJWTToken(builder.Configuration.GetSection("JWT").Get<JwtModel>());
 builder.Services.AddBusinessServices();
+builder.Services.ConfigureHangire(builder.Configuration.GetSection("DbSetup").Get<DbSetupModel>()!);
+
+// Logging
+builder.Services.AddLogging(loggingBuilder =>
+{
+    loggingBuilder.AddConsole();
+});
 
 builder.Services.AddControllers(op =>
 {
@@ -62,6 +70,8 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseHangfireDashboard("/hangfire");
 
 app.UseMiddleware<ErrorHandlerMiddleware>();
 

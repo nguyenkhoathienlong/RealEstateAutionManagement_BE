@@ -18,7 +18,6 @@ namespace Data.Models
 
     public class AuctionViewModel : BaseModel
     {
-        public string Description { get; set; } = null!;
         public DateTime? RegistrationStartDate { get; set; }
         public DateTime? RegistrationEndDate { get; set; }
         public float StartingPrice { get; set; }
@@ -40,9 +39,6 @@ namespace Data.Models
 
     public class AuctionCreateRequestModel
     {
-        [Required]
-        public string Description { get; set; } = null!;
-
         [Required]
         [Range(0, float.MaxValue, ErrorMessage = "Starting price must be a positive number.")]
         public float StartingPrice { get; set; }
@@ -66,7 +62,6 @@ namespace Data.Models
 
     public class AuctionCreateModel
     {
-        public string Description { get; set; } = null!;
         public DateTime? RegistrationStartDate { get; set; }
         public DateTime? RegistrationEndDate { get; set; }
         public float StartingPrice { get; set; }
@@ -85,7 +80,6 @@ namespace Data.Models
 
     public class AuctionUpdateModel
     {
-        public string Description { get; set; } = null!;
         public DateTime? RegistrationStartDate { get; set; }
         public DateTime? RegistrationEndDate { get; set; }
         public float StartingPrice { get; set; }
@@ -111,5 +105,10 @@ namespace Data.Models
             OrderBy = "";
         }
         public string? Search { get; set; }
+    }
+
+    public class ApproveAuctionModel
+    {
+        public bool IsApproved { get; set; }
     }
 }

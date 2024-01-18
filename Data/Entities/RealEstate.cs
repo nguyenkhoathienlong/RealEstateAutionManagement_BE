@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -11,8 +12,10 @@ namespace Data.Entities
     {
         public string Name { get; set; } = null!;
         public string Address { get; set; } = null!;
+        public string Description { get; set; } = null!;
         public string? LinkAttachment { get; set; }
         public DateTime? ApproveTime { get; set; }
+        public RealEstateStatus Status { get; set; } = RealEstateStatus.Pending;
 
 
         //relationship

@@ -1,6 +1,8 @@
 ﻿using Data.EFCore;
 using Data.Entities;
 using Data.Models;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -88,6 +90,18 @@ namespace UserManagement.Extensions
                             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(model?.Secret ?? ""))
                     };
                 });
+        }
+
+        public static void ConfigureHangire(this IServiceCollection services, DbSetupModel model)
+        {
+            services.AddHangfire(config => config
+                .UsePostgreSqlStorage(c => c.UseNpgsqlConnection(model?.ConnectionStrings))
+                .UseFilter(new AutomaticRetryAttribute { Attempts = 0 }));
+            services.AddHangfireServer(options =>
+            {
+                options.WorkerCount = Environment.ProcessorCount * 5;
+                options.Queues = new[] { "critical", "default" };
+            });
         }
     }
 }

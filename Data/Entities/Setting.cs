@@ -13,6 +13,6 @@ namespace Data.Entities
         public string Key { get; set; } = null!;
         public string Value { get; set; } = null!;
         public string Description { get; set; } = null!;
-        public SettingDataUnit DataUnit { get; set; }
+        public SettingDataUnit DataUnit { get; set; } = SettingDataUnit.Default;
     }
 }

@@ -10,7 +10,6 @@ namespace Data.Entities
 {
     public class Auction : BaseEntities
     {
-        public string Description { get; set; } = null!;
         public DateTime? RegistrationStartDate { get; set; }
         public DateTime? RegistrationEndDate { get; set; }
         public float StartingPrice { get; set; }
@@ -21,7 +20,7 @@ namespace Data.Entities
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime? ApproveTime { get; set; }
-        public AuctionStatus Status { get; set; }
+        public AuctionStatus Status { get; set; } = AuctionStatus.Pending;
 
 
         //relationship
