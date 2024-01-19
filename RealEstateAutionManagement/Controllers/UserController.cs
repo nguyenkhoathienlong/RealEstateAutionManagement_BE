@@ -74,5 +74,39 @@ namespace RealEstateAuctionManagement.Controllers
             var result = await _userService.Delete(id);
             return Ok(result);
         }
+
+        [HttpPut("{id}/image-profile")]
+        public async Task<IActionResult> UpdateProfile(Guid id, IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+            {
+                return BadRequest("File is null or empty");
+            }
+            if (Path.GetExtension(image.FileName) != ".png" && Path.GetExtension(image.FileName) != ".jpg")
+            {
+                return BadRequest("Only image files are allowed");
+            }
+            var result = await _userService.UpdateProfileImage(id, image);
+            return Ok(("Image upload successfully"));
+        }
+
+        [HttpPut("{id}/identification-information")]
+        public async Task<IActionResult> UpdateIdentificationInformation(Guid id, [FromForm] UpdateIdentificationInformation model)
+        {
+            if (model == null)
+            {
+                return BadRequest("File is not null or empty");
+            }
+            if (Path.GetExtension(model?.IdentityCardFrontImage.FileName) != ".png" && Path.GetExtension(model?.IdentityCardFrontImage.FileName) != ".jpg")
+            {
+                return BadRequest("Identity Card Front only image files are allowed");
+            }
+            if (Path.GetExtension(model?.IdentityCardBackImage.FileName) != ".png" && Path.GetExtension(model?.IdentityCardBackImage.FileName) != ".jpg")
+            {
+                return BadRequest("Identity Card Back only image files are allowed");
+            }
+            var result = await _userService.UploadDocument(id, model);
+            return Ok(("Image upload successfully"));
+        }
     }
 }

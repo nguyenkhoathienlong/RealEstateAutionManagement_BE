@@ -1,8 +1,14 @@
 ﻿using Data.EFCore;
 using Data.Entities;
 using Data.Models;
+<<<<<<< Updated upstream
 using Hangfire;
 using Hangfire.PostgreSql;
+=======
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Storage.V1;
+>>>>>>> Stashed changes
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -92,6 +98,7 @@ namespace UserManagement.Extensions
                 });
         }
 
+<<<<<<< Updated upstream
         public static void ConfigureHangire(this IServiceCollection services, DbSetupModel model)
         {
             services.AddHangfire(config => config
@@ -102,6 +109,22 @@ namespace UserManagement.Extensions
                 options.WorkerCount = Environment.ProcessorCount * 5;
                 options.Queues = new[] { "critical", "default" };
             });
+=======
+        public static void ConfigureFirebaseServices(this IServiceCollection services, FirebaseModel model)
+        {
+            var credential = GoogleCredential.FromFile(Environment.CurrentDirectory! + "\\" + model.FirebaseSDKFile);
+
+            if (FirebaseApp.DefaultInstance == null)
+            {
+                FirebaseApp.Create(new AppOptions
+                {
+                    Credential = credential,
+                    ProjectId = model.ProjectId
+                });
+            }
+            StorageClient _storageClient = StorageClient.Create(credential);
+            services.AddSingleton<IFirebaseStorageService>(new FirebaseStorageService(model.Bucket, _storageClient));
+>>>>>>> Stashed changes
         }
     }
 }

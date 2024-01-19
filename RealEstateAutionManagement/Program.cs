@@ -12,6 +12,7 @@ builder.Services.ConfigurePostgreSqlServer(builder.Configuration.GetSection("DbS
 builder.Services.AddAutoMapper(typeof(MapperProfiles));
 builder.Services.AddCors();
 builder.Services.ConfigureJWTToken(builder.Configuration.GetSection("JWT").Get<JwtModel>());
+builder.Services.ConfigureFirebaseServices(builder.Configuration.GetSection("Firebase").Get<FirebaseModel>());
 builder.Services.AddBusinessServices();
 builder.Services.ConfigureHangire(builder.Configuration.GetSection("DbSetup").Get<DbSetupModel>()!);
 

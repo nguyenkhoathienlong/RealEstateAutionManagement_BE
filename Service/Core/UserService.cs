@@ -10,6 +10,8 @@ using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Http;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Service.Core
 {
@@ -22,6 +24,8 @@ namespace Service.Core
         Task<Guid> Create(UserCreateModel userCreateModel);
         Task<Guid> Update(Guid id, UserUpdateModel model);
         Task<Guid> Delete(Guid id);
+        Task<Guid> UpdateProfileImage(Guid id, IFormFile image);
+        Task<Guid> UploadDocument(Guid id, UpdateIdentificationInformation model);
 
     }
     public class UserService : IUserService
@@ -31,14 +35,16 @@ namespace Service.Core
         private readonly IMapper _mapper;
         private readonly IJwtUtils _jwtUtils;
         private readonly IConfiguration _configuration;
+        private readonly IFirebaseStorageService _firebaseStorageService;
 
-        public UserService(DataContext dataContext, ISortHelpers<User> sortHelper, IMapper mapper, IConfiguration configuration, IJwtUtils jwtUtils)
+        public UserService(DataContext dataContext, ISortHelpers<User> sortHelper, IMapper mapper, IConfiguration configuration, IJwtUtils jwtUtils, IFirebaseStorageService firebaseStorageService)
         {
             _dataContext = dataContext;
             _sortHelper = sortHelper;
             _mapper = mapper;
             _configuration = configuration;
             _jwtUtils = jwtUtils;
+            _firebaseStorageService = firebaseStorageService;
         }
 
         public async Task<JWTToken> Login(UserRequest model)
@@ -227,6 +233,62 @@ namespace Service.Core
             }
         }
 
+        public async Task<Guid> UpdateProfileImage(Guid id, IFormFile image)
+        {
+            try
+            {
+                var checkExistUser = await GetUser(id);
+                if (checkExistUser == null)
+                {
+                    throw new AppException(ErrorMessage.IdNotExist);
+                }
+                string avatarPath = id.ToString() + "/Avatar";
+                UserUpdateModel profile = new UserUpdateModel
+                {
+                    Avatar = await _firebaseStorageService.UploadFileAsync(image, avatarPath, "_" + id),
+                };
+                var updateData = _mapper.Map(profile, checkExistUser);
+                _dataContext.Users.Update(updateData);
+                await _dataContext.SaveChangesAsync();
+                return checkExistUser.Id;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new AppException(e.Message);
+            }
+        }
+
+        public async Task<Guid> UploadDocument(Guid id, UpdateIdentificationInformation model)
+        {
+            try
+            {
+                var checkExistUser = await GetUser(id);
+                if (checkExistUser == null)
+                {
+                    throw new AppException(ErrorMessage.IdNotExist);
+                }
+                string avatarPath = id.ToString() + "/Identification Document";
+                UserUpdateModel profile = new UserUpdateModel
+                {
+                    IdentityNumber = model.IdentityNumber,
+                    IdentityCardProvideDate = EnsureDateUtc(model.IdentityCardProvideDate),
+                    IdentityCardFrontImage = await _firebaseStorageService.UploadFileAsync(model.IdentityCardFrontImage, avatarPath, model.IdentityCardFrontImage.FileName + "_" + id),
+                    IdentityCardBackImage = await _firebaseStorageService.UploadFileAsync(model.IdentityCardBackImage, avatarPath, model.IdentityCardBackImage.FileName + "_" + id),
+                    Status = UserStatus.Inactive
+                };
+                var updateData = _mapper.Map(profile, checkExistUser);
+                _dataContext.Users.Update(updateData);
+                await _dataContext.SaveChangesAsync();
+                return checkExistUser.Id;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new AppException(e.Message);
+            }
+        }
+
         // private method
 
         private void SearchByKeyWord(ref IQueryable<User> users, string? keyword)
@@ -250,6 +312,22 @@ namespace Service.Core
             {
                 Console.WriteLine(e);
                 throw new AppException(e.Message);
+            }
+        }
+        private DateTime EnsureDateUtc(DateTime dateTime)
+        {
+            if (dateTime.Kind == DateTimeKind.Unspecified)
+            {
+                // Assuming your original DateTime is in the local time zone
+                return DateTime.SpecifyKind(dateTime, DateTimeKind.Local).ToUniversalTime();
+            }
+            else if (dateTime.Kind == DateTimeKind.Local)
+            {
+                return dateTime.ToUniversalTime();
+            }
+            else
+            {
+                return dateTime;
             }
         }
     }
