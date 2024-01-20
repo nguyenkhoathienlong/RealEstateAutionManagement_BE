@@ -26,6 +26,15 @@ namespace RealEstateAuctionManagement.Controllers
             return Ok(result);
         }
 
+        [Authorize]
+        [HttpGet("own")]
+        public async Task<IActionResult> GetOwnAuctions([FromQuery] AuctionQueryModel query)
+        {
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _auctionService.GetOwnAuctions(query, userId);
+            return Ok(result);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {

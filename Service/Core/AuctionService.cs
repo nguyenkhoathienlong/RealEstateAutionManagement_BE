@@ -21,6 +21,7 @@ namespace Service.Core
     public interface IAuctionService
     {
         Task<PagingModel<AuctionViewModel>> GetAll(AuctionQueryModel query, string userRole);
+        Task<PagingModel<AuctionViewModel>> GetOwnAuctions(AuctionQueryModel query, string userId);
         Task<AuctionViewModel> GetById(Guid id);
         Task<Guid> Create(AuctionCreateModel auctionCreateModel);
         Task<Guid> Update(Guid id, AuctionUpdateModel model);
@@ -322,6 +323,33 @@ namespace Service.Core
                     .SingleOrDefaultAsync();
                 if (data == null) throw new AppException(ErrorMessage.IdNotExist);
                 return data;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new AppException(e.Message);
+            }
+        }
+
+        public async Task<PagingModel<AuctionViewModel>> GetOwnAuctions(AuctionQueryModel query, string userId)
+        {
+            try
+            {
+                var queryData = _dataContext.Auctions
+                    .Where(x => !x.IsDeleted && x.CreateByUserId == new Guid(userId));
+
+                var sortData = _sortHelper.ApplySort(queryData, query.OrderBy!);
+
+                var data = await sortData.ToPagedListAsync(query.PageIndex, query.PageSize);
+
+                var pagingData = new PagingModel<AuctionViewModel>()
+                {
+                    PageIndex = data.CurrentPage,
+                    PageSize = data.PageSize,
+                    TotalCount = data.TotalCount,
+                    pagingData = _mapper.Map<List<Auction>, List<AuctionViewModel>>(data)
+                };
+                return pagingData;
             }
             catch (Exception e)
             {
