@@ -13,7 +13,7 @@ namespace Service.Core
         Task<PagingModel<RealEstateViewModel>> GetAll(RealEstateQueryModel query);
         Task<RealEstateViewModel> GetById(Guid id);
         Task<Guid> Create(RealEstateCreateModel model, string userId);
-        Task<Guid> Update(Guid id, RealEstateUpdateModel model);
+        Task<Guid> Update(Guid id, RealEstateUpdateModel model, string userId);
         Task<Guid> Delete(Guid id);
         Task<Guid> ApproveRealEstate(Guid id, ApproveRealEstateModel model, string approvedById);
     }
@@ -39,7 +39,14 @@ namespace Service.Core
                 //var existedRealEstate = await _dataContext.RealEstates
                 //    .Where(x => !x.IsDeleted)
                 //    .FirstOrDefaultAsync();
-                var data = _mapper.Map<RealEstateCreateModel, RealEstate>(model);
+
+                // Check if the category exists
+                var categoryExist = await _dataContext.Categories
+                    .FirstOrDefaultAsync(c => c.Id == model.CategoryId);
+                if (categoryExist == null)
+                {
+                    throw new AppException(ErrorMessage.CategoryNotExist);
+                }
 
                 var user = await _dataContext.Users
                     .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == new Guid(userId));
@@ -47,6 +54,8 @@ namespace Service.Core
                 {
                     throw new AppException(ErrorMessage.UserNameDoNotExist);
                 }
+
+                var data = _mapper.Map<RealEstateCreateModel, RealEstate>(model);
 
                 data.ApproveTime = null;
                 data.Status = RealEstateStatus.Pending;
@@ -125,19 +134,47 @@ namespace Service.Core
             }
         }
 
-        public async Task<Guid> Update(Guid id, RealEstateUpdateModel model)
+        public async Task<Guid> Update(Guid id, RealEstateUpdateModel model, string userId)
         {
             try
             {
-                var checkExistRealEstate = await GetRealEstate(id);
-                if (checkExistRealEstate == null)
+                var existRealEstate = await GetRealEstate(id);
+                if (existRealEstate == null)
                 {
                     throw new AppException(ErrorMessage.IdNotExist);
                 }
-                var updateData = _mapper.Map(model, checkExistRealEstate);
-                _dataContext.RealEstates.Update(updateData);
+
+                // Check if the category exists
+                var categoryExist = await _dataContext.Categories
+                    .FirstOrDefaultAsync(c => c.Id == model.CategoryId);
+                if (categoryExist == null)
+                {
+                    throw new AppException(ErrorMessage.CategoryNotExist);
+                }
+
+                var user = await _dataContext.Users
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == new Guid(userId));
+                if (user == null)
+                {
+                    throw new AppException(ErrorMessage.UserNameDoNotExist);
+                }
+
+                // Check if the user is a member and if they own the real estate
+                if (user.Role == Role.Member && existRealEstate.UserId != new Guid(userId))
+                {
+                    throw new AppException(ErrorMessage.RealEstateNotExist);
+                }
+
+                // Check if the real estate is sold or rejected
+                if (existRealEstate.Status == RealEstateStatus.Sold || existRealEstate.Status == RealEstateStatus.Rejected)
+                {
+                    throw new AppException(ErrorMessage.RealEstateSoldOrRejected);
+                }
+
+                var data = _mapper.Map(model, existRealEstate);
+                _dataContext.RealEstates.Update(data);
                 await _dataContext.SaveChangesAsync();
-                return checkExistRealEstate.Id;
+                return existRealEstate.Id;
             }
             catch (Exception e)
             {

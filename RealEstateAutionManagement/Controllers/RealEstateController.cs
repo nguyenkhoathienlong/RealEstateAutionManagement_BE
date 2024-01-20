@@ -54,10 +54,12 @@ namespace RealEstateAuctionManagement.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] RealEstateUpdateModel model)
         {
-            var result = await _realEstateService.Update(id, model);
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _realEstateService.Update(id, model, userId);
             return Ok(result);
         }
 

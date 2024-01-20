@@ -26,5 +26,7 @@ namespace Service.Utilities
         public static string RealEstateNotApproved = "REAL_ESTATE_NOT_APPROVED";
         public static string AuctionNotPending = "AUCTION_NOT_PENDING";
         public static string RealEstateNotPending = "REAL_ESTATE_NOT_PENDING";
+        public static string RealEstateSoldOrRejected = "REAL_ESTATE_SOLD_OR_REJECTED";
+        public static string CategoryNotExist = "CATEGORY_DOES_NOT_EXIST";
     }
 }

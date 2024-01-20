@@ -51,15 +51,22 @@ namespace Data.Models
 
     public class RealEstateUpdateModel
     {
+        [Required(ErrorMessage = "Name is required.")]
         public string Name { get; set; } = null!;
+
+        [Required(ErrorMessage = "Address is required.")]
         public string Address { get; set; } = null!;
+
+        [Required(ErrorMessage = "Description is required.")]
         public string Description { get; set; } = null!;
+
         public string? LinkAttachment { get; set; }
-        public DateTime? ApproveTime { get; set; }
-        public RealEstateStatus Status { get; set; }
-        public Guid CategoryId { get; set; }
-        public Guid UserId { get; set; }
-        public Guid? ApproveByUserId { get; set; }
+
+        [Required(ErrorMessage = "CategoryId is required.")]
+        public Guid? CategoryId { get; set; }
+
+        //[Required(ErrorMessage = "Images are required.")]
+        //public List<IFormFile> Images { get; set; } = null!;
         [JsonIgnore]
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;
     }
