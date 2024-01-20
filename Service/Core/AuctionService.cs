@@ -266,7 +266,7 @@ namespace Service.Core
                     var openJobId = BackgroundJob.Schedule<BackgroundServices>(s => s.OpenAuction(auction.Id), auction.StartDate);
                     KeyValueStore.Instance.Set($"OpenAuctionTask_{auction.Id}", openJobId);
 
-                    // Schedule a task to close the auction at the end date time
+                    // Schedule task for closing the auction at the end date time
                     var closeJobId = BackgroundJob.Schedule<BackgroundServices>(s => s.CloseAuction(auction.Id), auction.EndDate);
                     KeyValueStore.Instance.Set($"CloseAuctionTask_{auction.Id}", closeJobId);
                 }
@@ -282,7 +282,7 @@ namespace Service.Core
                 {
                     Title = model.IsApproved ? "Phiên đấu giá đã được duyệt" : "Phiên đấu giá bị từ chối",
                     Description = model.IsApproved ? $"Yêu cầu đấu giá tài sản {auction.RealEstates.Name} của bạn đã được duyệt." 
-                        : $"Yêu cầu đấu giá tài sản {auction.RealEstates.Name} của bạn đã bị từ chối do thông tin không phù hợp.",
+                        : $"Yêu cầu đấu giá tài sản {auction.RealEstates.Name} của bạn đã bị từ chối do thông tin cung cấp chưa phù hợp.",
                     UserId = auction.CreateByUserId
                 };
 

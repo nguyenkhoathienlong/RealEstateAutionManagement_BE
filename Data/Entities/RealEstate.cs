@@ -27,5 +27,8 @@ namespace Data.Entities
         public Guid UserId { get; set; }
         [ForeignKey("UserId")]
         public User Users { get; set; } = null!;
+        public Guid? ApproveByUserId { get; set; }
+        [ForeignKey("ApproveByUserId")]
+        public User? ApprovedByUser { get; set; }
     }
 }

@@ -50,6 +50,7 @@ namespace Data.Enum
     {
         Pending,
         Approved,
-        Sold
+        Sold,
+        Rejected
     }
 }

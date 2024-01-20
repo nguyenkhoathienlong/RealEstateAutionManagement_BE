@@ -25,5 +25,6 @@ namespace Service.Utilities
         public static string ApprovalRequestExpired = "APPROVAL_REQUEST_EXPIRED";
         public static string RealEstateNotApproved = "REAL_ESTATE_NOT_APPROVED";
         public static string AuctionNotPending = "AUCTION_NOT_PENDING";
+        public static string RealEstateNotPending = "REAL_ESTATE_NOT_PENDING";
     }
 }

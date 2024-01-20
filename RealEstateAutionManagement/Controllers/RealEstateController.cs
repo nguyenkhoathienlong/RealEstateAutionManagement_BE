@@ -1,5 +1,7 @@
 ﻿using Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RealEstateAuctionManagement.Claims;
 using Service.Core;
 
 namespace RealEstateAuctionManagement.Controllers
@@ -29,10 +31,26 @@ namespace RealEstateAuctionManagement.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Create(RealEstateCreateModel model)
+        public async Task<IActionResult> Create([FromForm] RealEstateCreateModel model)
         {
-            var result = await _realEstateService.Create(model);
+            var userId = User.Claims.GetUserIdFromJwtToken();
+
+            // Validate the images
+            foreach (var image in model.Images)
+            {
+                if (image == null || image.Length == 0)
+                {
+                    return BadRequest("File is null or empty");
+                }
+                if (Path.GetExtension(image.FileName) != ".png" && Path.GetExtension(image.FileName) != ".jpg")
+                {
+                    return BadRequest("Only .png and .jpg image files are allowed");
+                }
+            }
+
+            var result = await _realEstateService.Create(model, userId);
             return Ok(result);
         }
 
@@ -47,6 +65,15 @@ namespace RealEstateAuctionManagement.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var result = await _realEstateService.Delete(id);
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Staff, Admin")]
+        [HttpPut("{id}/approve")]
+        public async Task<IActionResult> ApproveRealEstate(Guid id, [FromBody] ApproveRealEstateModel model)
+        {
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _realEstateService.ApproveRealEstate(id, model, userId);
             return Ok(result);
         }
     }

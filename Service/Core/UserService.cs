@@ -245,7 +245,7 @@ namespace Service.Core
                 string avatarPath = id.ToString() + "/Avatar";
                 UserUpdateModel profile = new UserUpdateModel
                 {
-                    Avatar = await _firebaseStorageService.UploadFileAsync(image, avatarPath, "_" + id),
+                    Avatar = await _firebaseStorageService.UploadFileAsync(image, avatarPath, Guid.NewGuid().ToString() + image.FileName),
                 };
                 var updateData = _mapper.Map(profile, checkExistUser);
                 _dataContext.Users.Update(updateData);

@@ -57,7 +57,7 @@ namespace Data.Models
         public DateTime EndDate { get; set; }
 
         [Required]
-        public Guid RealEstateId { get; set; }
+        public Guid? RealEstateId { get; set; }
     }
 
     public class AuctionCreateModel
