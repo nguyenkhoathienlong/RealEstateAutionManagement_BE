@@ -20,7 +20,7 @@ namespace Service.Core
 {
     public interface IAuctionService
     {
-        Task<PagingModel<AuctionViewModel>> GetAll(AuctionQueryModel query);
+        Task<PagingModel<AuctionViewModel>> GetAll(AuctionQueryModel query, string userRole);
         Task<AuctionViewModel> GetById(Guid id);
         Task<Guid> Create(AuctionCreateModel auctionCreateModel);
         Task<Guid> Update(Guid id, AuctionUpdateModel model);
@@ -61,13 +61,19 @@ namespace Service.Core
             }
         }
 
-        public async Task<PagingModel<AuctionViewModel>> GetAll(AuctionQueryModel query)
+        public async Task<PagingModel<AuctionViewModel>> GetAll(AuctionQueryModel query, string userRole)
         {
             try
             {
                 var queryData = _dataContext.Auctions
-                .Where(x => !x.IsDeleted);
-
+                    .Where(x => !x.IsDeleted);
+                
+                if (string.IsNullOrEmpty(userRole) || userRole == Role.Member.ToString())
+                {
+                    queryData = queryData
+                        .Where(x => x.Status != AuctionStatus.Pending && x.Status != AuctionStatus.Rejected);
+                }
+                
                 var sortData = _sortHelper.ApplySort(queryData, query.OrderBy!);
 
                 var data = await sortData.ToPagedListAsync(query.PageIndex, query.PageSize);

@@ -1,4 +1,5 @@
-﻿using Data.Models;
+﻿using Data.Enum;
+using Data.Models;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,6 +19,12 @@ namespace RealEstateAuctionManagement.Claims
         {
             var userId = claims.FirstOrDefault(claims => claims.Type == "id")?.Value;
             return userId ?? "";
+        }
+
+        public static string GetUserRoleFromJwtToken(this IEnumerable<Claim> claims)
+        {
+            var role = claims.FirstOrDefault(claims => claims.Type == ClaimTypes.Role)?.Value;
+            return role ?? "";
         }
     }
 }

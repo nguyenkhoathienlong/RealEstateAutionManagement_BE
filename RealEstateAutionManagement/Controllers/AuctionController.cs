@@ -21,7 +21,8 @@ namespace RealEstateAuctionManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAuction([FromQuery] AuctionQueryModel query)
         {
-            var result = await _auctionService.GetAll(query);
+            var userRole = User.Claims.GetUserRoleFromJwtToken();
+            var result = await _auctionService.GetAll(query, userRole);
             return Ok(result);
         }
 
