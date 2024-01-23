@@ -109,11 +109,16 @@ namespace Data.Models
         public Role Role { get; set; }
     }
 
-    public class UpdateIdentificationInformation
+    public class IdentificationInformation
     {
         public string? IdentityNumber { get; set; }
         public DateTime IdentityCardProvideDate { get; set; }
         public IFormFile IdentityCardFrontImage { get; set; } = null!;
         public IFormFile IdentityCardBackImage { get; set; } = null!;
+    }
+
+    public class ApprovedIdentificationDocument
+    {
+
     }
 }

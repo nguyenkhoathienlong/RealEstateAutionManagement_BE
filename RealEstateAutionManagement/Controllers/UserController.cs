@@ -91,7 +91,7 @@ namespace RealEstateAuctionManagement.Controllers
         }
 
         [HttpPut("{id}/identification-information")]
-        public async Task<IActionResult> UpdateIdentificationInformation(Guid id, [FromForm] UpdateIdentificationInformation model)
+        public async Task<IActionResult> UpdateIdentificationInformation(Guid id, [FromForm] IdentificationInformation model)
         {
             if (model == null)
             {

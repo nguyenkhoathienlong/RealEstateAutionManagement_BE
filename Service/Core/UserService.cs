@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Http;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Google.Cloud.Storage.V1;
 
 namespace Service.Core
 {
@@ -25,7 +26,7 @@ namespace Service.Core
         Task<Guid> Update(Guid id, UserUpdateModel model);
         Task<Guid> Delete(Guid id);
         Task<Guid> UpdateProfileImage(Guid id, IFormFile image);
-        Task<Guid> UploadDocument(Guid id, UpdateIdentificationInformation model);
+        Task<Guid> UploadDocument(Guid id, IdentificationInformation model);
 
     }
     public class UserService : IUserService
@@ -259,7 +260,7 @@ namespace Service.Core
             }
         }
 
-        public async Task<Guid> UploadDocument(Guid id, UpdateIdentificationInformation model)
+        public async Task<Guid> UploadDocument(Guid id, IdentificationInformation model)
         {
             try
             {
@@ -288,6 +289,31 @@ namespace Service.Core
                 throw new AppException(e.Message);
             }
         }
+
+        //public async Task<Guid> ApproveIdentificationDocument(Guid id, string approvedById)
+        //{
+        //    try
+        //    {
+        //        var checkExistUser = await GetUser(id);
+        //        if (checkExistUser == null)
+        //        {
+        //            throw new AppException(ErrorMessage.IdNotExist);
+        //        }
+        //        if (checkExistUser?.Status == UserStatus.Inactive)
+        //        {
+        //            _mapper.Map<User, UserViewModel>(checkExistUser);
+        //        }
+        //        if (checkExistUser?.Status == UserStatus.Inactive)
+        //        {
+        //            throw new AppException(ErrorMessage.UserNotPending);
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e);
+        //        throw new AppException(e.Message);
+        //    }
+        //}
 
         // private method
 

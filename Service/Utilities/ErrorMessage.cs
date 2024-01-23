@@ -28,5 +28,6 @@ namespace Service.Utilities
         public static string RealEstateNotPending = "REAL_ESTATE_NOT_PENDING";
         public static string RealEstateSoldOrRejected = "REAL_ESTATE_SOLD_OR_REJECTED";
         public static string CategoryNotExist = "CATEGORY_DOES_NOT_EXIST";
+        public static string UserNotPending = "USER_NOT_PENDING";
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Net;
 
 namespace UserManagement.Helpers
 {
@@ -49,6 +50,32 @@ namespace UserManagement.Helpers
                 {
                     StatusCode = context.HttpContext.Response.StatusCode.ToString()
                 };
+
+                if (!context.ModelState.IsValid)
+                {
+                    var validationErrors = context.ModelState
+                        .Where(entry => entry.Value.Errors.Any())
+                        .ToDictionary(
+                            entry => entry.Key,
+                            entry => entry.Value.Errors.Select(error => error.ErrorMessage).ToArray()
+                        );
+
+                    resp.StatusCode = "400"; // Bad Request
+                    resp.Messagae = "Validation failed";
+                    resp.Data = validationErrors;
+
+                    // Return the response with validation errors
+                    context.Result = new JsonResult(resp, new JsonSerializerOptions
+                    {
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                        Converters = { new JsonStringEnumConverter() }
+                    });
+
+                    context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+                    return;
+                }
 
                 if (resultObj is not null)
                     resp.Data = resultObj;
