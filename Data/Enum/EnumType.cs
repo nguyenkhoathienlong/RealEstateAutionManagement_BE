@@ -23,7 +23,8 @@ namespace Data.Enum
     {
         Active,
         Inactive,
-        Banned
+        Banned,
+        Rejected
     }
     public enum AuctionStatus
     {

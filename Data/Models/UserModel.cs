@@ -119,6 +119,6 @@ namespace Data.Models
 
     public class ApprovedIdentificationDocument
     {
-
+        public bool IsApproved { get; set; }
     }
 }

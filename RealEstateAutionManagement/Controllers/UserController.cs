@@ -18,7 +18,7 @@ namespace RealEstateAuctionManagement.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("/login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login(UserRequest model)
         {
             var data = await _userService.Login(model);
@@ -26,7 +26,7 @@ namespace RealEstateAuctionManagement.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("/register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegisterModel model)
         {
             var data = await _userService.Register(model);
@@ -75,8 +75,8 @@ namespace RealEstateAuctionManagement.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{id}/image-profile")]
-        public async Task<IActionResult> UpdateProfile(Guid id, IFormFile image)
+        [HttpPut("upload-image-profile")]
+        public async Task<IActionResult> UpdateProfile(IFormFile image)
         {
             if (image == null || image.Length == 0)
             {
@@ -86,12 +86,13 @@ namespace RealEstateAuctionManagement.Controllers
             {
                 return BadRequest("Only image files are allowed");
             }
-            var result = await _userService.UpdateProfileImage(id, image);
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _userService.UpdateProfileImage(userId, image);
             return Ok(("Image upload successfully"));
         }
 
-        [HttpPut("{id}/identification-information")]
-        public async Task<IActionResult> UpdateIdentificationInformation(Guid id, [FromForm] IdentificationInformation model)
+        [HttpPut("upload-identification-information")]
+        public async Task<IActionResult> UpdateIdentificationInformation([FromForm] IdentificationInformation model)
         {
             if (model == null)
             {
@@ -105,8 +106,18 @@ namespace RealEstateAuctionManagement.Controllers
             {
                 return BadRequest("Identity Card Back only image files are allowed");
             }
-            var result = await _userService.UploadDocument(id, model);
-            return Ok(("Image upload successfully"));
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _userService.UploadDocument(userId, model);
+            return Ok("Image upload successfully");
+        }
+
+        //[Authorize(Roles = "Staff, Admin")]
+        [HttpPut("{id}/approve")]
+        public async Task<IActionResult> ApproveIdentificationDocument(Guid id, [FromBody]ApprovedIdentificationDocument model)
+        {
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _userService.ApproveIdentificationDocument(id, model, userId);
+            return Ok(result);
         }
     }
 }
