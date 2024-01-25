@@ -41,20 +41,20 @@ namespace Data.Models
     {
         [Required]
         [Range(0, float.MaxValue, ErrorMessage = "Starting price must be a positive number.")]
-        public float StartingPrice { get; set; }
+        public float? StartingPrice { get; set; }
 
         [Required]
         [Range(0, float.MaxValue, ErrorMessage = "Bid increment must be a positive number.")]
-        public float BidIncrement { get; set; }
+        public float? BidIncrement { get; set; }
 
         [Range(0, float.MaxValue, ErrorMessage = "Max bid increment must be a positive number.")]
         public float? MaxBidIncrement { get; set; }
 
         [Required]
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
         [Required]
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         [Required]
         public Guid? RealEstateId { get; set; }

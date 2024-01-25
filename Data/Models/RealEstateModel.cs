@@ -32,13 +32,13 @@ namespace Data.Models
     public class RealEstateCreateModel
     {
         [Required(ErrorMessage = "Name is required.")]
-        public string Name { get; set; } = null!;
+        public string? Name { get; set; }
 
         [Required(ErrorMessage = "Address is required.")]
-        public string Address { get; set; } = null!;
+        public string? Address { get; set; }
 
         [Required(ErrorMessage = "Description is required.")]
-        public string Description { get; set; } = null!;
+        public string? Description { get; set; }
 
         public string? LinkAttachment { get; set; }
 
@@ -46,19 +46,19 @@ namespace Data.Models
         public Guid? CategoryId { get; set; }
 
         [Required(ErrorMessage = "Images are required.")]
-        public List<IFormFile> Images { get; set; } = null!;
+        public List<IFormFile>? Images { get; set; }
     }
 
     public class RealEstateUpdateModel
     {
         [Required(ErrorMessage = "Name is required.")]
-        public string Name { get; set; } = null!;
+        public string? Name { get; set; }
 
         [Required(ErrorMessage = "Address is required.")]
-        public string Address { get; set; } = null!;
+        public string? Address { get; set; }
 
         [Required(ErrorMessage = "Description is required.")]
-        public string Description { get; set; } = null!;
+        public string? Description { get; set; }
 
         public string? LinkAttachment { get; set; }
 

@@ -190,13 +190,13 @@ namespace Service.Core
                 }
 
                 // Check if the end date is the same as the start date
-                if (auctionCreateModel.EndDate.Date != auctionCreateModel.StartDate.Date)
+                if (auctionCreateModel.EndDate!.Value.Date != auctionCreateModel.StartDate!.Value.Date)
                 {
                     throw new AppException(ErrorMessage.EndDateNotSameAsStartDate);
                 }
 
                 // Check if the end time is later than the start time
-                if (auctionCreateModel.EndDate.TimeOfDay <= auctionCreateModel.StartDate.TimeOfDay)
+                if (auctionCreateModel.EndDate!.Value.TimeOfDay <= auctionCreateModel.StartDate!.Value.TimeOfDay)
                 {
                     throw new AppException(ErrorMessage.EndTimeNotLaterThanStartTime);
                 }
