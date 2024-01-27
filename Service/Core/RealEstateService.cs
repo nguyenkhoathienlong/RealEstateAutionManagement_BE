@@ -11,7 +11,7 @@ namespace Service.Core
     public interface IRealEstateService
     {
         Task<PagingModel<RealEstateViewModel>> GetAll(RealEstateQueryModel query, string userId);
-        Task<RealEstateViewModel> GetById(Guid id);
+        Task<RealEstateViewModel> GetById(Guid id, string userId);
         Task<Guid> Create(RealEstateCreateModel model, string userId);
         Task<Guid> Update(Guid id, RealEstateUpdateModel model, string userId);
         Task<Guid> Delete(Guid id, string userId);
@@ -136,15 +136,29 @@ namespace Service.Core
             }
         }
 
-        public async Task<RealEstateViewModel> GetById(Guid id)
+        public async Task<RealEstateViewModel> GetById(Guid id, string userId)
         {
             try
             {
+                var user = await _dataContext.Users
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == new Guid(userId));
+                if (user == null)
+                {
+                    throw new AppException(ErrorMessage.UserNameDoNotExist);
+                }
+
                 var data = await GetRealEstate(id);
                 if (data == null)
                 {
                     throw new AppException(ErrorMessage.IdNotExist);
                 }
+
+                // Check if the user is a member and if they own the real estate
+                if (user.Role == Role.Member && data.UserId != new Guid(userId))
+                {
+                    throw new AppException(ErrorMessage.RealEstateNotExist);
+                }
+
                 return _mapper.Map<RealEstate, RealEstateViewModel>(data);
             }
             catch (Exception e)

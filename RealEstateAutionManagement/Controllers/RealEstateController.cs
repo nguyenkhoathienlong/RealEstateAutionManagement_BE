@@ -26,10 +26,12 @@ namespace RealEstateAuctionManagement.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var result = await _realEstateService.GetById(id);
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _realEstateService.GetById(id, userId);
             return Ok(result);
         }
 
