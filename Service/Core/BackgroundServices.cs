@@ -83,10 +83,31 @@ namespace Service.Core
             var auction = await _dataContext.Auctions.FindAsync(auctionId);
             if (auction != null && auction.Status == AuctionStatus.OnGoing)
             {
-                auction.Status = AuctionStatus.Completed;
+                // Check if there is more than one bid
+                var bids = await _dataContext.UserBids.CountAsync(ub => ub.AuctionId == auctionId && !ub.IsDeposit);
+                if (bids > 1)
+                {
+                    auction.Status = AuctionStatus.Completed;
+                    _logger.LogInformation($"Auction {auctionId} has been closed.");
+                }
+                else
+                {
+                    auction.Status = AuctionStatus.Failed;
+                    _logger.LogWarning($"Auction {auctionId} failed. Not enough bids.");
+
+                    // Create a notification
+                    var notification = new Notification
+                    {
+                        Title = "Phiên đấu giá thất bại",
+                        Description = $"Phiên đấu giá cho {auction.RealEstates.Name} đã không thành công do quá ít người trả giá.",
+                        UserId = auction.CreateByUserId
+                    };
+                    _dataContext.Notifications.Add(notification);
+                    await _dataContext.SaveChangesAsync();
+                }
+
                 _dataContext.Auctions.Update(auction);
                 await _dataContext.SaveChangesAsync();
-                _logger.LogInformation($"Auction {auctionId} has been closed.");
             }
             else
             {

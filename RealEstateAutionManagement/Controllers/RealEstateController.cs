@@ -17,10 +17,12 @@ namespace RealEstateAuctionManagement.Controllers
             _realEstateService = realEstateService;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllRealEstate([FromQuery] RealEstateQueryModel query)
         {
-            var result = await _realEstateService.GetAll(query);
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _realEstateService.GetAll(query, userId);
             return Ok(result);
         }
 
@@ -38,16 +40,19 @@ namespace RealEstateAuctionManagement.Controllers
             var userId = User.Claims.GetUserIdFromJwtToken();
 
             // Validate the images
-            foreach (var image in model.Images)
+            if (model.Images != null)
             {
-                if (image == null || image.Length == 0)
+                foreach (var image in model.Images)
                 {
-                    return BadRequest("File is null or empty");
-                }
-                if (Path.GetExtension(image.FileName) != ".png" && Path.GetExtension(image.FileName) != ".jpg")
-                {
-                    return BadRequest("Only .png and .jpg image files are allowed");
-                }
+                    if (image == null || image.Length == 0)
+                    {
+                        return BadRequest("File is null or empty");
+                    }
+                    if (Path.GetExtension(image.FileName) != ".png" && Path.GetExtension(image.FileName) != ".jpg")
+                    {
+                        return BadRequest("Only .png and .jpg image files are allowed");
+                    }
+                } 
             }
 
             var result = await _realEstateService.Create(model, userId);
@@ -63,10 +68,12 @@ namespace RealEstateAuctionManagement.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _realEstateService.Delete(id);
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _realEstateService.Delete(id, userId);
             return Ok(result);
         }
 

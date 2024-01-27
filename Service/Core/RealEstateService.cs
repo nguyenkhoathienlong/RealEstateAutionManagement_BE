@@ -10,11 +10,11 @@ namespace Service.Core
 {
     public interface IRealEstateService
     {
-        Task<PagingModel<RealEstateViewModel>> GetAll(RealEstateQueryModel query);
+        Task<PagingModel<RealEstateViewModel>> GetAll(RealEstateQueryModel query, string userId);
         Task<RealEstateViewModel> GetById(Guid id);
         Task<Guid> Create(RealEstateCreateModel model, string userId);
         Task<Guid> Update(Guid id, RealEstateUpdateModel model, string userId);
-        Task<Guid> Delete(Guid id);
+        Task<Guid> Delete(Guid id, string userId);
         Task<Guid> ApproveRealEstate(Guid id, ApproveRealEstateModel model, string approvedById);
     }
     public class RealEstateService : IRealEstateService
@@ -65,18 +65,21 @@ namespace Service.Core
                 await _dataContext.SaveChangesAsync();
 
                 // Add images to the RealEstateImage table
-                foreach (var image in model.Images)
+                if (model.Images != null)
                 {
-                    string path = data.Id.ToString() + "/RealEstate";
-                    string filename = Guid.NewGuid().ToString() + image.FileName;
-                    string imageUrl = await _firebaseStorageService.UploadFileAsync(image, path, filename);
-
-                    var realEstateImage = new RealEstateImage
+                    foreach (var image in model.Images)
                     {
-                        Image = imageUrl,
-                        RealEstateId = data.Id
-                    };
-                    await _dataContext.RealEstateImages.AddAsync(realEstateImage);
+                        string path = data.Id.ToString() + "/RealEstate";
+                        string filename = Guid.NewGuid().ToString() + image.FileName;
+                        string imageUrl = await _firebaseStorageService.UploadFileAsync(image, path, filename);
+
+                        var realEstateImage = new RealEstateImage
+                        {
+                            Image = imageUrl,
+                            RealEstateId = data.Id
+                        };
+                        await _dataContext.RealEstateImages.AddAsync(realEstateImage);
+                    } 
                 }
                 await _dataContext.SaveChangesAsync();
 
@@ -89,12 +92,29 @@ namespace Service.Core
             }
         }
 
-        public async Task<PagingModel<RealEstateViewModel>> GetAll(RealEstateQueryModel query)
+        public async Task<PagingModel<RealEstateViewModel>> GetAll(RealEstateQueryModel query, string userId)
         {
             try
             {
-                var queryData = _dataContext.RealEstates
-                .Where(x => !x.IsDeleted);
+                var user = await _dataContext.Users
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == new Guid(userId));
+                if (user == null)
+                {
+                    throw new AppException(ErrorMessage.UserNameDoNotExist);
+                }
+
+                IQueryable<RealEstate> queryData;
+
+                if (user.Role == Role.Member)
+                {
+                    queryData = _dataContext.RealEstates
+                        .Where(x => !x.IsDeleted && x.UserId == user.Id);
+                }
+                else
+                {
+                    queryData = _dataContext.RealEstates
+                        .Where(x => !x.IsDeleted);
+                }
 
                 var sortData = _sortHelper.ApplySort(queryData, query.OrderBy!);
 
@@ -183,7 +203,7 @@ namespace Service.Core
             }
         }
 
-        public async Task<Guid> Delete(Guid id)
+        public async Task<Guid> Delete(Guid id, string userId)
         {
             try
             {
@@ -192,6 +212,29 @@ namespace Service.Core
                 {
                     throw new AppException(ErrorMessage.IdNotExist);
                 }
+
+                var user = await _dataContext.Users
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == new Guid(userId));
+                if (user == null)
+                {
+                    throw new AppException(ErrorMessage.UserNameDoNotExist);
+                }
+
+                // Check if the user is a member and if they own the real estate
+                if (user.Role == Role.Member && checkExistRealEstate.UserId != new Guid(userId))
+                {
+                    throw new AppException(ErrorMessage.RealEstateNotExist);
+                }
+
+                // Check if the real estate is already in an auction, regardless of auction status
+                var existingAuction = await _dataContext.Auctions
+                    .Where(x => x.RealEstateId == id)
+                    .FirstOrDefaultAsync();
+                if (existingAuction != null)
+                {
+                    throw new AppException(ErrorMessage.RealEstateAlreadyInAuction);
+                }
+
                 checkExistRealEstate.IsDeleted = true;
                 _dataContext.RealEstates.Update(checkExistRealEstate);
                 await _dataContext.SaveChangesAsync();
