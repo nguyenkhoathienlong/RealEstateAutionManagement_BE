@@ -205,6 +205,15 @@ namespace Service.Core
                     throw new AppException(ErrorMessage.RealEstateSoldOrRejected);
                 }
 
+                // Check if the real estate is either not in an auction or in auction with status pending only
+                var existingAuction = await _dataContext.Auctions
+                    .Where(x => !x.IsDeleted && x.RealEstateId == id && x.Status != AuctionStatus.Pending)
+                    .FirstOrDefaultAsync();
+                if (existingAuction != null)
+                {
+                    throw new AppException(ErrorMessage.RealEstateAlreadyInAuction);
+                }
+
                 var data = _mapper.Map(model, existRealEstate);
                 _dataContext.RealEstates.Update(data);
                 await _dataContext.SaveChangesAsync();
@@ -242,7 +251,7 @@ namespace Service.Core
 
                 // Check if the real estate is already in an auction, regardless of auction status
                 var existingAuction = await _dataContext.Auctions
-                    .Where(x => x.RealEstateId == id)
+                    .Where(x => !x.IsDeleted && x.RealEstateId == id)
                     .FirstOrDefaultAsync();
                 if (existingAuction != null)
                 {

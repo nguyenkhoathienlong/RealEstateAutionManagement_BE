@@ -58,10 +58,12 @@ namespace RealEstateAuctionManagement.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _auctionService.Delete(id);
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _auctionService.Delete(id, userId);
             return Ok(result);
         }
 

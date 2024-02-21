@@ -25,7 +25,7 @@ namespace Service.Core
         Task<AuctionViewModel> GetById(Guid id);
         Task<Guid> Create(AuctionCreateModel auctionCreateModel);
         Task<Guid> Update(Guid id, AuctionUpdateModel model, string userId);
-        Task<Guid> Delete(Guid id);
+        Task<Guid> Delete(Guid id, string userId);
         Task<Guid> CreateAuctionRequest(AuctionCreateRequestModel auctionCreateModel, string userId);
         Task<Guid> ApproveAuction(Guid id, ApproveAuctionModel model, string approvedById);
     }
@@ -165,7 +165,7 @@ namespace Service.Core
 
                 // Check if the real estate is already in an auction
                 var existingAuction = await _dataContext.Auctions
-                    .Where(x => x.RealEstateId == model.RealEstateId && x.Id != id && x.Status != AuctionStatus.Rejected && x.Status != AuctionStatus.Failed)
+                    .Where(x => !x.IsDeleted && x.RealEstateId == model.RealEstateId && x.Id != id && x.Status != AuctionStatus.Rejected && x.Status != AuctionStatus.Failed)
                     .FirstOrDefaultAsync();
                 if (existingAuction != null)
                 {
@@ -215,7 +215,7 @@ namespace Service.Core
             }
         }
 
-        public async Task<Guid> Delete(Guid id)
+        public async Task<Guid> Delete(Guid id, string userId)
         {
             try
             {
@@ -224,6 +224,26 @@ namespace Service.Core
                 {
                     throw new AppException(ErrorMessage.IdNotExist);
                 }
+
+                var user = await _dataContext.Users
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == new Guid(userId));
+                if (user == null)
+                {
+                    throw new AppException(ErrorMessage.UserNameDoNotExist);
+                }
+
+                // Check if the user is a member and if they own the auction
+                if (user.Role == Role.Member && checkExistAuction.CreateByUserId != new Guid(userId))
+                {
+                    throw new AppException(ErrorMessage.IdNotExist);
+                }
+
+                // Check if the auction is in a pending status
+                if (checkExistAuction.Status != AuctionStatus.Pending)
+                {
+                    throw new AppException(ErrorMessage.AuctionNotPending);
+                }
+
                 checkExistAuction.IsDeleted = true;
                 _dataContext.Auctions.Update(checkExistAuction);
                 await _dataContext.SaveChangesAsync();
@@ -256,7 +276,7 @@ namespace Service.Core
 
                 // Check if the real estate is already in an auction
                 var existingAuction = await _dataContext.Auctions
-                    .Where(x => x.RealEstateId == auctionCreateModel.RealEstateId && x.Status != AuctionStatus.Rejected && x.Status != AuctionStatus.Failed)
+                    .Where(x => !x.IsDeleted && x.RealEstateId == auctionCreateModel.RealEstateId && x.Status != AuctionStatus.Rejected && x.Status != AuctionStatus.Failed)
                     .FirstOrDefaultAsync();
                 if (existingAuction != null)
                 {
