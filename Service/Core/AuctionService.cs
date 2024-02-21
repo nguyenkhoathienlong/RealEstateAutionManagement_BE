@@ -24,7 +24,7 @@ namespace Service.Core
         Task<PagingModel<AuctionViewModel>> GetOwnAuctions(AuctionQueryModel query, string userId);
         Task<AuctionViewModel> GetById(Guid id);
         Task<Guid> Create(AuctionCreateModel auctionCreateModel);
-        Task<Guid> Update(Guid id, AuctionUpdateModel model);
+        Task<Guid> Update(Guid id, AuctionUpdateModel model, string userId);
         Task<Guid> Delete(Guid id);
         Task<Guid> CreateAuctionRequest(AuctionCreateRequestModel auctionCreateModel, string userId);
         Task<Guid> ApproveAuction(Guid id, ApproveAuctionModel model, string approvedById);
@@ -114,7 +114,7 @@ namespace Service.Core
             }
         }
 
-        public async Task<Guid> Update(Guid id, AuctionUpdateModel model)
+        public async Task<Guid> Update(Guid id, AuctionUpdateModel model, string userId)
         {
             try
             {
@@ -123,6 +123,86 @@ namespace Service.Core
                 {
                     throw new AppException(ErrorMessage.IdNotExist);
                 }
+
+                var user = await _dataContext.Users
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == new Guid(userId));
+                if (user == null)
+                {
+                    throw new AppException(ErrorMessage.UserNameDoNotExist);
+                }
+
+                // Check if the user is a member and if they own the auction
+                if (user.Role == Role.Member && checkExistAuction.CreateByUserId != new Guid(userId))
+                {
+                    throw new AppException(ErrorMessage.IdNotExist);
+                }
+
+                // Check if the auction is in a pending status
+                if (checkExistAuction.Status != AuctionStatus.Pending)
+                {
+                    throw new AppException(ErrorMessage.AuctionNotPending);
+                }
+
+                var realEstate = await _dataContext.RealEstates
+                    .Where(x => !x.IsDeleted && x.Id == model.RealEstateId)
+                    .FirstOrDefaultAsync();
+                if (realEstate == null)
+                {
+                    throw new AppException(ErrorMessage.RealEstateNotExist);
+                }
+                
+                // Check if user is member and they own the real estate
+                if (user.Role == Role.Member && realEstate.UserId != user.Id)
+                {
+                    throw new AppException(ErrorMessage.RealEstateNotExist);
+                }
+
+                // Check if the real estate is approved
+                if (realEstate.Status != RealEstateStatus.Approved)
+                {
+                    throw new AppException(ErrorMessage.RealEstateNotApproved);
+                }
+
+                // Check if the real estate is already in an auction
+                var existingAuction = await _dataContext.Auctions
+                    .Where(x => x.RealEstateId == model.RealEstateId && x.Id != id && x.Status != AuctionStatus.Rejected && x.Status != AuctionStatus.Failed)
+                    .FirstOrDefaultAsync();
+                if (existingAuction != null)
+                {
+                    throw new AppException(ErrorMessage.RealEstateAlreadyInAuction);
+                }
+
+                // Check if the start date is at least 7 days from now
+                if (model.StartDate < DateTime.UtcNow.AddDays(7))
+                {
+                    throw new AppException(ErrorMessage.StartDateTooEarly);
+                }
+
+                // Check if the end date is the same as the start date
+                if (model.EndDate!.Value.Date != model.StartDate!.Value.Date)
+                {
+                    throw new AppException(ErrorMessage.EndDateNotSameAsStartDate);
+                }
+
+                // Check if the end time is later than the start time
+                if (model.EndDate!.Value.TimeOfDay <= model.StartDate!.Value.TimeOfDay)
+                {
+                    throw new AppException(ErrorMessage.EndTimeNotLaterThanStartTime);
+                }
+
+                // Check max bid increment
+                if (model.MaxBidIncrement != null)
+                {
+                    if (model.MaxBidIncrement < model.BidIncrement)
+                    {
+                        throw new AppException(ErrorMessage.MaxBidIncrementLessThanBidIncrement);
+                    }
+                    if (model.MaxBidIncrement % model.BidIncrement != 0)
+                    {
+                        throw new AppException(ErrorMessage.MaxBidIncrementNotMultipleOfBidIncrement);
+                    }
+                }
+
                 var updateData = _mapper.Map(model, checkExistAuction);
                 _dataContext.Auctions.Update(updateData);
                 await _dataContext.SaveChangesAsync();

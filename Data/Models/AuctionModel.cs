@@ -80,20 +80,25 @@ namespace Data.Models
 
     public class AuctionUpdateModel
     {
-        public DateTime? RegistrationStartDate { get; set; }
-        public DateTime? RegistrationEndDate { get; set; }
-        public float StartingPrice { get; set; }
-        public float BidIncrement { get; set; }
+        [Required]
+        [Range(0, float.MaxValue, ErrorMessage = "Starting price must be a positive number.")]
+        public float? StartingPrice { get; set; }
+
+        [Required]
+        [Range(0, float.MaxValue, ErrorMessage = "Bid increment must be a positive number.")]
+        public float? BidIncrement { get; set; }
+
+        [Range(0, float.MaxValue, ErrorMessage = "Max bid increment must be a positive number.")]
         public float? MaxBidIncrement { get; set; }
-        public float RegistrationFee { get; set; }
-        public float Deposit { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public DateTime? ApproveTime { get; set; }
-        public AuctionStatus Status { get; set; }
-        public Guid CreateByUserId { get; set; }
-        public Guid? ApproveByUserId { get; set; }
-        public Guid RealEstateId { get; set; }
+
+        [Required]
+        public DateTime? StartDate { get; set; }
+
+        [Required]
+        public DateTime? EndDate { get; set; }
+
+        [Required]
+        public Guid? RealEstateId { get; set; }
         [JsonIgnore]
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;
     }
