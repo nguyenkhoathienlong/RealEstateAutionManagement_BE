@@ -4,7 +4,7 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace UserManagement.Helpers
+namespace RealEstateAuctionManagement.Helpers
 {
     public class ErrorHandlerMiddleware
     {

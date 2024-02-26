@@ -14,7 +14,7 @@ using Service.Core;
 using Service.Utilities;
 using System.Text;
 
-namespace UserManagement.Extensions
+namespace RealEstateAuctionManagement.Extensions
 {
     public static class ServiceExtension
     {
