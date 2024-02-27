@@ -3,8 +3,8 @@ using Hangfire;
 using Microsoft.OpenApi.Models;
 using Service.Mapper;
 using Service.SignalR;
-using UserManagement.Extensions;
-using UserManagement.Helpers;
+using RealEstateAuctionManagement.Extensions;
+using RealEstateAuctionManagement.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
