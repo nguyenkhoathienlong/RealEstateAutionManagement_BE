@@ -2,6 +2,7 @@ using Data.Models;
 using Hangfire;
 using Microsoft.OpenApi.Models;
 using Service.Mapper;
+using Service.SignalR;
 using UserManagement.Extensions;
 using UserManagement.Helpers;
 
@@ -15,6 +16,8 @@ builder.Services.ConfigureJWTToken(builder.Configuration.GetSection("JWT").Get<J
 builder.Services.ConfigureFirebaseServices(builder.Configuration.GetSection("Firebase").Get<FirebaseModel>());
 builder.Services.AddBusinessServices();
 builder.Services.ConfigureHangire(builder.Configuration.GetSection("DbSetup").Get<DbSetupModel>()!);
+builder.Services.ConfigureSignalR();
+builder.Services.AddHttpContextAccessor();
 
 // Logging
 builder.Services.AddLogging(loggingBuilder =>
@@ -77,5 +80,7 @@ app.UseHangfireDashboard("/hangfire");
 app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.MapControllers();
+
+app.MapHub<SignalRHub>("/reasHub");
 
 app.Run();

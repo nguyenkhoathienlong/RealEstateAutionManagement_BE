@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RealEstateAuctionManagement.Claims;
 using Service.Core;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace RealEstateAuctionManagement.Controllers
 {
@@ -82,6 +83,23 @@ namespace RealEstateAuctionManagement.Controllers
         {
             var userId = User.Claims.GetUserIdFromJwtToken();
             var result = await _auctionService.ApproveAuction(id, model, userId);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterForAuction([FromBody] RegisterAuctionModel model)
+        {
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _auctionService.RegisterForAuction(model, userId);
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("callback")]
+        public async Task<IActionResult> PaymentCallback()
+        {
+            var result = await _auctionService.PaymentCallback(Request.Query);
             return Ok(result);
         }
     }

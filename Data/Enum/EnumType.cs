@@ -54,4 +54,20 @@ namespace Data.Enum
         Sold,
         Rejected
     }
+    public enum TransactionType
+    {
+        DepositFee,
+        AnnualAccountFee,
+        Bid
+    }
+    public enum TransactionStatus
+    {
+        Pending = 0,
+        Successful = 1,
+        Failed = -1
+    }
+    public enum PaymentMethod
+    {
+        VnPay
+    }
 }

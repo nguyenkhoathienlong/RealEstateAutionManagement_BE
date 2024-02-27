@@ -25,7 +25,7 @@ namespace Data.EFCore
         public DbSet<RealEstate> RealEstates { get; set; }
         public DbSet<RealEstateImage> RealEstateImages { get; set; }
         public DbSet<Setting> Settings { get; set; }
-        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Transaction> Transaction { get; set; }
         public DbSet<UserBid> UserBids { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

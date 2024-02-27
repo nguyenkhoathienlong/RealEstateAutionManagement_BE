@@ -68,6 +68,8 @@ namespace UserManagement.Extensions
 
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<ISortHelpers<Notification>, SortHelper<Notification>>();
+
+            services.AddScoped<IVnPayService, VnPayService>();
         }
 
         public static void ConfigureJWTToken(this IServiceCollection services, JwtModel? model)
@@ -120,6 +122,14 @@ namespace UserManagement.Extensions
             }
             StorageClient _storageClient = StorageClient.Create(credential);
             services.AddSingleton<IFirebaseStorageService>(new FirebaseStorageService(model.Bucket, _storageClient));
+        }
+
+        public static void ConfigureSignalR(this IServiceCollection services)
+        {
+            services.AddSignalR(hubOptions =>
+            {
+                hubOptions.EnableDetailedErrors = true;
+            });
         }
     }
 }

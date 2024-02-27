@@ -33,11 +33,11 @@ namespace Service.Core
         {
             try
             {
-                var existedTransaction = await _dataContext.Transactions
+                var existedTransaction = await _dataContext.Transaction
                     .Where(x => !x.IsDeleted)
                     .FirstOrDefaultAsync();
                 var data = _mapper.Map<TransactionCreateModel, Transaction>(model);
-                await _dataContext.Transactions.AddAsync(data);
+                await _dataContext.Transaction.AddAsync(data);
                 await _dataContext.SaveChangesAsync();
                 return data.Id;
             }
@@ -52,7 +52,7 @@ namespace Service.Core
         {
             try
             {
-                var queryData = _dataContext.Transactions
+                var queryData = _dataContext.Transaction
                 .Where(x => !x.IsDeleted);
 
                 var sortData = _sortHelper.ApplySort(queryData, query.OrderBy!);
@@ -103,7 +103,7 @@ namespace Service.Core
                     throw new AppException(ErrorMessage.IdNotExist);
                 }
                 var updateData = _mapper.Map(model, checkExistTransaction);
-                _dataContext.Transactions.Update(updateData);
+                _dataContext.Transaction.Update(updateData);
                 await _dataContext.SaveChangesAsync();
                 return checkExistTransaction.Id;
             }
@@ -124,7 +124,7 @@ namespace Service.Core
                     throw new AppException(ErrorMessage.IdNotExist);
                 }
                 checkExistTransaction.IsDeleted = true;
-                _dataContext.Transactions.Update(checkExistTransaction);
+                _dataContext.Transaction.Update(checkExistTransaction);
                 await _dataContext.SaveChangesAsync();
                 return checkExistTransaction.Id;
             }
@@ -148,7 +148,7 @@ namespace Service.Core
             try
             {
                 var data = await _dataContext
-                    .Transactions
+                    .Transaction
                     .Where(x => !x.IsDeleted && x.Id == id)
                     .SingleOrDefaultAsync();
                 if (data == null) throw new AppException(ErrorMessage.IdNotExist);

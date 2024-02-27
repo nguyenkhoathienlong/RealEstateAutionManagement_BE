@@ -33,5 +33,6 @@ namespace Data.Entities
         public Guid RealEstateId { get; set; }
         [ForeignKey("RealEstateId")]
         public RealEstate RealEstates { get; set; } = null!;
+        public IList<Transaction>? Transactions { get; set; }
     }
 }

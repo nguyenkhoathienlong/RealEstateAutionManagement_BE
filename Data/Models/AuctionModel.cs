@@ -40,7 +40,7 @@ namespace Data.Models
     public class AuctionCreateRequestModel
     {
         [Required]
-        [Range(0, float.MaxValue, ErrorMessage = "Starting price must be a positive number.")]
+        [Range(0, 10000000, ErrorMessage = "Starting price must be a positive number and lower than 10m vnd.")]
         public float? StartingPrice { get; set; }
 
         [Required]
@@ -115,5 +115,10 @@ namespace Data.Models
     public class ApproveAuctionModel
     {
         public bool IsApproved { get; set; }
+    }
+
+    public class RegisterAuctionModel
+    {
+        public Guid AuctionId { get; set; }
     }
 }

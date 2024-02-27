@@ -29,5 +29,10 @@ namespace Service.Utilities
         public static string RealEstateSoldOrRejected = "REAL_ESTATE_SOLD_OR_REJECTED";
         public static string CategoryNotExist = "CATEGORY_DOES_NOT_EXIST";
         public static string UserNotPending = "USER_NOT_PENDING";
+        public static string PaymentRequestCreationError = "PAYMENT_REQUEST_CREATION_ERROR";
+        public static string TransactionNotExist = "TRANSACTION_NOT_EXIST";
+        public static string TransactionClosed = "TRANSACTION_CLOSED";
+        public static string UserAlreadyRegisteredAuction = "USER_ALREADY_REGISTERED_AUCTION";
+        public static string UserCannotRegisterOwnAuction = "USER_CANNOT_REGISTER_OWN_AUCTION";
     }
 }

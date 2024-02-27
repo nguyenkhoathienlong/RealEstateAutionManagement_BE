@@ -106,6 +106,7 @@ namespace Service.Core
                     await _dataContext.SaveChangesAsync();
                 }
 
+                auction.DateUpdate = DateTime.UtcNow;
                 _dataContext.Auctions.Update(auction);
                 await _dataContext.SaveChangesAsync();
             }
@@ -113,6 +114,24 @@ namespace Service.Core
             {
                 _logger.LogWarning($"Cannot close auction {auctionId}. The auction might not exist or not being opened for bidding.");
             }
+        }
+
+        public async Task CheckTransactionStatus(Guid transactionId)
+        {
+            _logger.LogInformation("Checking transaction status: {TransactionId}", transactionId);
+            var transaction = await _dataContext.Transaction.FirstOrDefaultAsync(x => x.Id == transactionId);
+            if (transaction is not null)
+            {
+                if (transaction.Status.Equals(TransactionStatus.Pending))
+                {
+                    transaction.Status = TransactionStatus.Failed;
+                    transaction.DateUpdate = DateTime.UtcNow;
+                    await _dataContext.SaveChangesAsync();
+                    _logger.LogWarning("Transaction: {TransactionId} Failed due to timeout", transaction.Id);
+                }
+                else _logger.LogInformation("Transaction: {TransactionId} is completed", transactionId);
+            }
+            else _logger.LogWarning("Transaction: {TransactionId} is not found", transactionId);
         }
     }
 }

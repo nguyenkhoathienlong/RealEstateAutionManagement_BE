@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.Enum;
 using Data.Models;
 using Hangfire;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +29,8 @@ namespace Service.Core
         Task<Guid> Delete(Guid id, string userId);
         Task<Guid> CreateAuctionRequest(AuctionCreateRequestModel auctionCreateModel, string userId);
         Task<Guid> ApproveAuction(Guid id, ApproveAuctionModel model, string approvedById);
+        Task<string> RegisterForAuction(RegisterAuctionModel model, string userId);
+        Task<PaymentResponseModel> PaymentCallback(IQueryCollection collection);
     }
 
     public class AuctionService : IAuctionService
@@ -35,12 +38,16 @@ namespace Service.Core
         private readonly DataContext _dataContext;
         private ISortHelpers<Auction> _sortHelper;
         private readonly IMapper _mapper;
+        private readonly IVnPayService _vnPayService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuctionService(DataContext dataContext, ISortHelpers<Auction> sortHelper, IMapper mapper)
+        public AuctionService(DataContext dataContext, ISortHelpers<Auction> sortHelper, IMapper mapper, IVnPayService vnPayService, IHttpContextAccessor httpContextAccessor)
         {
             _dataContext = dataContext;
             _sortHelper = sortHelper;
             _mapper = mapper;
+            _vnPayService = vnPayService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<Guid> Create(AuctionCreateModel model)
@@ -68,13 +75,13 @@ namespace Service.Core
             {
                 var queryData = _dataContext.Auctions
                     .Where(x => !x.IsDeleted);
-                
+
                 if (string.IsNullOrEmpty(userRole) || userRole == Role.Member.ToString())
                 {
                     queryData = queryData
                         .Where(x => x.Status != AuctionStatus.Pending && x.Status != AuctionStatus.Rejected);
                 }
-                
+
                 var sortData = _sortHelper.ApplySort(queryData, query.OrderBy!);
 
                 var data = await sortData.ToPagedListAsync(query.PageIndex, query.PageSize);
@@ -150,7 +157,7 @@ namespace Service.Core
                 {
                     throw new AppException(ErrorMessage.RealEstateNotExist);
                 }
-                
+
                 // Check if user is member and they own the real estate
                 if (user.Role == Role.Member && realEstate.UserId != user.Id)
                 {
@@ -356,8 +363,8 @@ namespace Service.Core
 
                 if (model.IsApproved)
                 {
-                    // Check if the current date is past the start date of the auction
-                    if (DateTime.UtcNow > auction.StartDate)
+                    // Check if the current date is past two days before the start date of the auction
+                    if (DateTime.UtcNow > auction.StartDate.AddDays(-2))
                     {
                         auction.Status = AuctionStatus.Rejected;
                         throw new AppException(ErrorMessage.ApprovalRequestExpired);
@@ -388,7 +395,7 @@ namespace Service.Core
                 var notification = new Notification
                 {
                     Title = model.IsApproved ? "Phiên đấu giá đã được duyệt" : "Phiên đấu giá bị từ chối",
-                    Description = model.IsApproved ? $"Yêu cầu đấu giá tài sản {auction.RealEstates.Name} của bạn đã được duyệt." 
+                    Description = model.IsApproved ? $"Yêu cầu đấu giá tài sản {auction.RealEstates.Name} của bạn đã được duyệt."
                         : $"Yêu cầu đấu giá tài sản {auction.RealEstates.Name} của bạn đã bị từ chối do thông tin cung cấp chưa phù hợp.",
                     UserId = auction.CreateByUserId
                 };
@@ -397,32 +404,6 @@ namespace Service.Core
                 await _dataContext.SaveChangesAsync();
 
                 return auction.Id;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw new AppException(e.Message);
-            }
-        }
-
-        // private method
-
-        //private void SearchByKeyWord(ref IQueryable<Auction> auctions, string? keyword)
-        //{
-        //    if (!auctions.Any() || string.IsNullOrWhiteSpace(keyword))
-        //        return;
-        //    auctions = auctions.Where(o => o.Name.ToLower().Contains(keyword.Trim().ToLower()) || o.AuctionName.ToLower().Contains(keyword.Trim().ToLower()));
-        //}
-        private async Task<Auction> GetAuction(Guid id)
-        {
-            try
-            {
-                var data = await _dataContext
-                    .Auctions
-                    .Where(x => !x.IsDeleted && x.Id == id)
-                    .SingleOrDefaultAsync();
-                if (data == null) throw new AppException(ErrorMessage.IdNotExist);
-                return data;
             }
             catch (Exception e)
             {
@@ -450,6 +431,143 @@ namespace Service.Core
                     pagingData = _mapper.Map<List<Auction>, List<AuctionViewModel>>(data)
                 };
                 return pagingData;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new AppException(e.Message);
+            }
+        }
+
+        public async Task<string> RegisterForAuction(RegisterAuctionModel model, string userId)
+        {
+            try
+            {
+                var httpContext = _httpContextAccessor.HttpContext!;
+
+                var auction = await _dataContext.Auctions
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.AuctionId);
+                if (auction == null)
+                {
+                    throw new AppException(ErrorMessage.IdNotExist);
+                }
+
+                // Check if the auction is approved
+                if (auction.Status != AuctionStatus.Approved)
+                {
+                    throw new AppException(ErrorMessage.RealEstateNotApproved);
+                }
+
+                // Check if the user is the owner of the auction
+                if (auction.CreateByUserId == new Guid(userId))
+                {
+                    throw new AppException(ErrorMessage.UserCannotRegisterOwnAuction);
+                }
+
+                // Check if the user has already registered for this auction
+                var existingRegistration = await _dataContext.UserBids
+                    .FirstOrDefaultAsync(x => x.UserId == new Guid(userId) && x.AuctionId == model.AuctionId && x.IsDeposit);
+                if (existingRegistration != null)
+                {
+                    throw new AppException(ErrorMessage.UserAlreadyRegisteredAuction);
+                }
+
+                // Calculate the fee
+                var amount = auction.RegistrationFee + auction.Deposit;
+
+                var transaction = new Transaction
+                {
+                    Id = Guid.NewGuid(),
+                    Amount = amount,
+                    PaymentMethod = PaymentMethod.VnPay,
+                    Status = TransactionStatus.Pending,
+                    Type = TransactionType.DepositFee,
+                    UserId = new Guid(userId),
+                    AuctionId = model.AuctionId
+                };
+
+                await _dataContext.Transaction.AddAsync(transaction);
+                await _dataContext.SaveChangesAsync();
+
+                var response = await _vnPayService.CreatePaymentUrl(userId, amount, transaction.Id, httpContext);
+                if (response.Equals(""))
+                {
+                    throw new AppException(ErrorMessage.PaymentRequestCreationError);
+                }
+
+                // Set schedule to fail the transaction in 15 minutes if still pending
+                BackgroundJob.Schedule<BackgroundServices>(s => s.CheckTransactionStatus(transaction.Id), TimeSpan.FromMinutes(15));
+                return response;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new AppException(e.Message);
+            }
+        }
+
+        public async Task<PaymentResponseModel> PaymentCallback(IQueryCollection collection)
+        {
+            var callbackResponse = _vnPayService.PaymentExecute(collection);
+            var transaction = await _dataContext.Transaction.FirstOrDefaultAsync(x => x.Id == new Guid(callbackResponse.OrderId));
+            if (transaction == null)
+            {
+                throw new AppException(ErrorMessage.TransactionNotExist);
+            }
+
+            if (!transaction.Status.Equals(TransactionStatus.Pending))
+            {
+                throw new AppException(ErrorMessage.TransactionClosed);
+            }
+            else
+            {
+                //VNPAY RETURN SUCCESS STATUS
+                if (callbackResponse.VnPayResponseCode.Equals("00"))
+                {
+                    transaction.Status = TransactionStatus.Successful;
+                    transaction.DateUpdate = DateTime.UtcNow;
+
+                    var userBid = new UserBid
+                    {
+                        Amount = transaction.Amount,
+                        IsDeposit = true,
+                        UserId = transaction.UserId,
+                        AuctionId = (Guid)transaction.AuctionId!
+                    };
+                    await _dataContext.AddAsync(userBid);
+                    await _dataContext.SaveChangesAsync();
+                }
+                //VNPAY RETURN FAILED STATUS
+                else
+                {
+                    //MARK TRANSACTION AS FAILED
+                    transaction.Status = TransactionStatus.Failed;
+                    transaction.DateUpdate = DateTime.UtcNow;
+                }
+                _dataContext.Transaction.Update(transaction);
+                _dataContext.SaveChanges();
+                return callbackResponse;
+            }
+        }
+
+        // private method
+
+        //private void SearchByKeyWord(ref IQueryable<Auction> auctions, string? keyword)
+        //{
+        //    if (!auctions.Any() || string.IsNullOrWhiteSpace(keyword))
+        //        return;
+        //    auctions = auctions.Where(o => o.Name.ToLower().Contains(keyword.Trim().ToLower()) || o.AuctionName.ToLower().Contains(keyword.Trim().ToLower()));
+        //}
+        private async Task<Auction> GetAuction(Guid id)
+        {
+            try
+            {
+                var data = await _dataContext
+                    .Auctions
+                    .Where(x => !x.IsDeleted && x.Id == id)
+                    .SingleOrDefaultAsync();
+                if (data == null) throw new AppException(ErrorMessage.IdNotExist);
+                return data;
             }
             catch (Exception e)
             {
