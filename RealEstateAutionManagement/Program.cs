@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.ConfigurePostgreSqlServer(builder.Configuration.GetSection("DbSetup").Get<DbSetupModel>()!);
 builder.Services.AddAutoMapper(typeof(MapperProfiles));
-builder.Services.AddCors();
+builder.Services.ConfigCors();
 builder.Services.ConfigureJWTToken(builder.Configuration.GetSection("JWT").Get<JwtModel>());
 builder.Services.ConfigureFirebaseServices(builder.Configuration.GetSection("Firebase").Get<FirebaseModel>());
 builder.Services.AddBusinessServices();
@@ -33,7 +33,7 @@ builder.Services.AddControllers(op =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
 {
-    option.SwaggerDoc("v1", new OpenApiInfo { Title = "UserManagement API", Version = "v1" });
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "REAS API", Version = "v1" });
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,

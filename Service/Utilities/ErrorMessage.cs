@@ -34,5 +34,8 @@ namespace Service.Utilities
         public static string TransactionClosed = "TRANSACTION_CLOSED";
         public static string UserAlreadyRegisteredAuction = "USER_ALREADY_REGISTERED_AUCTION";
         public static string UserCannotRegisterOwnAuction = "USER_CANNOT_REGISTER_OWN_AUCTION";
+        public static string AuctionNotOngoing = "AUCTION_NOT_ONGOING";
+        public static string UserCannotBidOwnAuction = "USER_CANNOT_BID_OWN_AUCTION";
+        public static string BidNotHigherThanCurrent = "BID_NOT_HIGHER_THAN_CURRENT";
     }
 }

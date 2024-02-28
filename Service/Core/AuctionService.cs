@@ -6,9 +6,11 @@ using Data.Models;
 using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RealEstateAuctionManagement.Extensions;
+using Service.SignalR;
 using Service.Utilities;
 using System;
 using System.Collections.Generic;
@@ -31,6 +33,7 @@ namespace Service.Core
         Task<Guid> ApproveAuction(Guid id, ApproveAuctionModel model, string approvedById);
         Task<string> RegisterForAuction(RegisterAuctionModel model, string userId);
         Task<PaymentResponseModel> PaymentCallback(IQueryCollection collection);
+        Task<Guid> PlaceBid(PlaceBidModel model, string userId);
     }
 
     public class AuctionService : IAuctionService
@@ -40,14 +43,17 @@ namespace Service.Core
         private readonly IMapper _mapper;
         private readonly IVnPayService _vnPayService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHubContext<SignalRHub> _hubContext;
+        private static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
-        public AuctionService(DataContext dataContext, ISortHelpers<Auction> sortHelper, IMapper mapper, IVnPayService vnPayService, IHttpContextAccessor httpContextAccessor)
+        public AuctionService(DataContext dataContext, ISortHelpers<Auction> sortHelper, IMapper mapper, IVnPayService vnPayService, IHttpContextAccessor httpContextAccessor, IHubContext<SignalRHub> hubContext)
         {
             _dataContext = dataContext;
             _sortHelper = sortHelper;
             _mapper = mapper;
             _vnPayService = vnPayService;
             _httpContextAccessor = httpContextAccessor;
+            _hubContext = hubContext;
         }
 
         public async Task<Guid> Create(AuctionCreateModel model)
@@ -547,6 +553,88 @@ namespace Service.Core
                 _dataContext.Transaction.Update(transaction);
                 _dataContext.SaveChanges();
                 return callbackResponse;
+            }
+        }
+
+        public async Task<Guid> PlaceBid(PlaceBidModel model, string userId)
+        {
+            try
+            {
+                // Wait to enter the semaphore.
+                await semaphoreSlim.WaitAsync();
+
+                var auction = await _dataContext.Auctions
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.AuctionId);
+                if (auction == null)
+                {
+                    throw new AppException(ErrorMessage.IdNotExist);
+                }
+
+                // Check if the auction is ongoing
+                if (auction.Status != AuctionStatus.OnGoing)
+                {
+                    throw new AppException(ErrorMessage.AuctionNotOngoing);
+                }
+
+                // Check if the user is the owner of the auction
+                if (auction.CreateByUserId == new Guid(userId))
+                {
+                    throw new AppException(ErrorMessage.UserCannotBidOwnAuction);
+                }
+
+                // Retrieve the highest bid for this auction
+                var highestBid = await _dataContext.UserBids
+                    .Where(x => x.AuctionId == model.AuctionId && !x.IsDeposit)
+                    .OrderByDescending(x => x.Amount)
+                    .FirstOrDefaultAsync();
+
+                // Check if the new bid is higher than the current highest bid
+                if (highestBid != null && model.Amount <= highestBid.Amount)
+                {
+                    throw new AppException(ErrorMessage.BidNotHigherThanCurrent);
+                }
+
+                // Create a new bid
+                var userBid = new UserBid
+                {
+                    Amount = model.Amount,
+                    IsDeposit = false,
+                    UserId = new Guid(userId),
+                    AuctionId = model.AuctionId
+                };
+
+                await _dataContext.UserBids.AddAsync(userBid);
+                await _dataContext.SaveChangesAsync();
+
+                // Create a new transaction
+                var transaction = new Transaction
+                {
+                    Id = Guid.NewGuid(),
+                    Amount = model.Amount,
+                    PaymentMethod = PaymentMethod.None,
+                    Status = TransactionStatus.Successful,
+                    Type = TransactionType.Bid,
+                    UserId = new Guid(userId),
+                    AuctionId = model.AuctionId
+                };
+
+                await _dataContext.Transaction.AddAsync(transaction);
+                await _dataContext.SaveChangesAsync();
+
+                // Send SignalR message to update highest bid
+                await _hubContext.Clients.Group(model.AuctionId.ToString()).SendAsync("UpdateHighestBid", model.Amount);
+
+                // Return the auction ID
+                return model.AuctionId;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new AppException(e.Message);
+            }
+            finally
+            {
+                semaphoreSlim.Release();
             }
         }
 

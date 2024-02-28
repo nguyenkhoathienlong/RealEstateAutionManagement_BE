@@ -68,6 +68,7 @@ namespace Data.Enum
     }
     public enum PaymentMethod
     {
-        VnPay
+        VnPay,
+        None
     }
 }

@@ -102,5 +102,14 @@ namespace RealEstateAuctionManagement.Controllers
             var result = await _auctionService.PaymentCallback(Request.Query);
             return Ok(result);
         }
+
+        [Authorize]
+        [HttpPost("place-bid")]
+        public async Task<IActionResult> PlaceBid([FromBody] PlaceBidModel model)
+        {
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var auctionId = await _auctionService.PlaceBid(model, userId);
+            return Ok(auctionId);
+        }
     }
 }

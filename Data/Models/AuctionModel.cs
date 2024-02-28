@@ -121,4 +121,10 @@ namespace Data.Models
     {
         public Guid AuctionId { get; set; }
     }
+
+    public class PlaceBidModel
+    {
+        public Guid AuctionId { get; set; }
+        public float Amount { get; set; }
+    }
 }

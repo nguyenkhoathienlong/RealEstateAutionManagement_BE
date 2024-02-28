@@ -31,7 +31,8 @@ namespace RealEstateAuctionManagement.Extensions
             services.AddCors(options => options.AddPolicy("AllowAll", builder =>
                     builder.AllowAnyHeader()
                         .AllowAnyMethod()
-                        .AllowAnyOrigin())
+                        .SetIsOriginAllowed((host) => true)
+                        .AllowCredentials())
             );
         }
 
