@@ -87,11 +87,11 @@ namespace RealEstateAuctionManagement.Controllers
         }
 
         [Authorize]
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterForAuction([FromBody] RegisterAuctionModel model)
+        [HttpPost("{id}/register")]
+        public async Task<IActionResult> RegisterForAuction(Guid id)
         {
             var userId = User.Claims.GetUserIdFromJwtToken();
-            var result = await _auctionService.RegisterForAuction(model, userId);
+            var result = await _auctionService.RegisterForAuction(id, userId);
             return Ok(result);
         }
 
@@ -104,12 +104,28 @@ namespace RealEstateAuctionManagement.Controllers
         }
 
         [Authorize]
-        [HttpPost("place-bid")]
-        public async Task<IActionResult> PlaceBid([FromBody] PlaceBidModel model)
+        [HttpPost("{id}/place-bid")]
+        public async Task<IActionResult> PlaceBid(Guid id, [FromBody] PlaceBidModel model)
         {
             var userId = User.Claims.GetUserIdFromJwtToken();
-            var auctionId = await _auctionService.PlaceBid(model, userId);
+            var auctionId = await _auctionService.PlaceBid(id, model, userId);
             return Ok(auctionId);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id}/open")]
+        public async Task<IActionResult> OpenAuction(Guid id)
+        {
+            var result = await _auctionService.OpenAuction(id);
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPatch("{id}/close")]
+        public async Task<IActionResult> CloseAuction(Guid id)
+        {
+            var result = await _auctionService.CloseAuction(id);
+            return Ok(result);
         }
     }
 }

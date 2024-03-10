@@ -13,7 +13,7 @@ builder.Services.ConfigurePostgreSqlServer(builder.Configuration.GetSection("DbS
 builder.Services.AddAutoMapper(typeof(MapperProfiles));
 builder.Services.ConfigCors();
 builder.Services.ConfigureJWTToken(builder.Configuration.GetSection("JWT").Get<JwtModel>());
-builder.Services.ConfigureFirebaseServices(builder.Configuration.GetSection("Firebase").Get<FirebaseModel>());
+builder.Services.ConfigureFirebaseServices(builder.Configuration.GetSection("Firebase").Get<FirebaseModel>()!);
 builder.Services.AddBusinessServices();
 builder.Services.ConfigureHangire(builder.Configuration.GetSection("DbSetup").Get<DbSetupModel>()!);
 builder.Services.ConfigureSignalR();
@@ -33,7 +33,7 @@ builder.Services.AddControllers(op =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
 {
-    option.SwaggerDoc("v1", new OpenApiInfo { Title = "REAS API", Version = "v1" });
+    option.SwaggerDoc("v2", new OpenApiInfo { Title = "REAS API", Version = "v2" });
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -63,7 +63,7 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
-{ c.SwaggerEndpoint("/swagger/v1/swagger.json", "REAS API v1"); });
+{ c.SwaggerEndpoint("/swagger/v2/swagger.json", "REAS API v2"); });
 
 app.UseCors("AllowAll");
 

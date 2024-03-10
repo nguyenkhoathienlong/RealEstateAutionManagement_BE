@@ -117,14 +117,8 @@ namespace Data.Models
         public bool IsApproved { get; set; }
     }
 
-    public class RegisterAuctionModel
-    {
-        public Guid AuctionId { get; set; }
-    }
-
     public class PlaceBidModel
     {
-        public Guid AuctionId { get; set; }
         public float Amount { get; set; }
     }
 }

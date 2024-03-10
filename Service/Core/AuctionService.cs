@@ -31,9 +31,11 @@ namespace Service.Core
         Task<Guid> Delete(Guid id, string userId);
         Task<Guid> CreateAuctionRequest(AuctionCreateRequestModel auctionCreateModel, string userId);
         Task<Guid> ApproveAuction(Guid id, ApproveAuctionModel model, string approvedById);
-        Task<string> RegisterForAuction(RegisterAuctionModel model, string userId);
+        Task<string> RegisterForAuction(Guid id, string userId);
         Task<PaymentResponseModel> PaymentCallback(IQueryCollection collection);
-        Task<Guid> PlaceBid(PlaceBidModel model, string userId);
+        Task<Guid> PlaceBid(Guid auctionId, PlaceBidModel model, string userId);
+        Task<Guid> OpenAuction(Guid id);
+        Task<Guid> CloseAuction(Guid id);
     }
 
     public class AuctionService : IAuctionService
@@ -395,6 +397,8 @@ namespace Service.Core
                     auction.Status = AuctionStatus.Rejected;
                 }
 
+                auction.DateUpdate = DateTime.UtcNow;
+
                 _dataContext.Auctions.Update(auction);
                 await _dataContext.SaveChangesAsync();
 
@@ -445,14 +449,14 @@ namespace Service.Core
             }
         }
 
-        public async Task<string> RegisterForAuction(RegisterAuctionModel model, string userId)
+        public async Task<string> RegisterForAuction(Guid id, string userId)
         {
             try
             {
                 var httpContext = _httpContextAccessor.HttpContext!;
 
                 var auction = await _dataContext.Auctions
-                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.AuctionId);
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
                 if (auction == null)
                 {
                     throw new AppException(ErrorMessage.IdNotExist);
@@ -472,7 +476,7 @@ namespace Service.Core
 
                 // Check if the user has already registered for this auction
                 var existingRegistration = await _dataContext.UserBids
-                    .FirstOrDefaultAsync(x => x.UserId == new Guid(userId) && x.AuctionId == model.AuctionId && x.IsDeposit);
+                    .FirstOrDefaultAsync(x => x.UserId == new Guid(userId) && x.AuctionId == id && x.IsDeposit);
                 if (existingRegistration != null)
                 {
                     throw new AppException(ErrorMessage.UserAlreadyRegisteredAuction);
@@ -489,7 +493,7 @@ namespace Service.Core
                     Status = TransactionStatus.Pending,
                     Type = TransactionType.DepositFee,
                     UserId = new Guid(userId),
-                    AuctionId = model.AuctionId
+                    AuctionId = id
                 };
 
                 await _dataContext.Transaction.AddAsync(transaction);
@@ -556,7 +560,7 @@ namespace Service.Core
             }
         }
 
-        public async Task<Guid> PlaceBid(PlaceBidModel model, string userId)
+        public async Task<Guid> PlaceBid(Guid auctionId, PlaceBidModel model, string userId)
         {
             try
             {
@@ -564,7 +568,7 @@ namespace Service.Core
                 await semaphoreSlim.WaitAsync();
 
                 var auction = await _dataContext.Auctions
-                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.AuctionId);
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == auctionId);
                 if (auction == null)
                 {
                     throw new AppException(ErrorMessage.IdNotExist);
@@ -584,7 +588,7 @@ namespace Service.Core
 
                 // Retrieve the highest bid for this auction
                 var highestBid = await _dataContext.UserBids
-                    .Where(x => x.AuctionId == model.AuctionId && !x.IsDeposit)
+                    .Where(x => x.AuctionId == auctionId && !x.IsDeposit)
                     .OrderByDescending(x => x.Amount)
                     .FirstOrDefaultAsync();
 
@@ -600,7 +604,7 @@ namespace Service.Core
                     Amount = model.Amount,
                     IsDeposit = false,
                     UserId = new Guid(userId),
-                    AuctionId = model.AuctionId
+                    AuctionId = auctionId
                 };
 
                 await _dataContext.UserBids.AddAsync(userBid);
@@ -615,17 +619,17 @@ namespace Service.Core
                     Status = TransactionStatus.Successful,
                     Type = TransactionType.Bid,
                     UserId = new Guid(userId),
-                    AuctionId = model.AuctionId
+                    AuctionId = auctionId
                 };
 
                 await _dataContext.Transaction.AddAsync(transaction);
                 await _dataContext.SaveChangesAsync();
 
                 // Send SignalR message to update highest bid
-                await _hubContext.Clients.Group(model.AuctionId.ToString()).SendAsync("UpdateHighestBid", model.Amount);
+                await _hubContext.Clients.Group(auctionId.ToString()).SendAsync("UpdateHighestBid", model.Amount);
 
                 // Return the auction ID
-                return model.AuctionId;
+                return auctionId;
             }
             catch (Exception e)
             {
@@ -635,6 +639,68 @@ namespace Service.Core
             finally
             {
                 semaphoreSlim.Release();
+            }
+        }
+
+        public async Task<Guid> OpenAuction(Guid id)
+        {
+            try
+            {
+                var auction = await GetAuction(id);
+                if (auction == null)
+                {
+                    throw new AppException(ErrorMessage.IdNotExist);
+                }
+
+                // Check if the auction is approved
+                if (auction.Status != AuctionStatus.Approved)
+                {
+                    throw new AppException(ErrorMessage.AuctionNotApproved);
+                }
+
+                auction.Status = AuctionStatus.OnGoing;
+                auction.DateUpdate = DateTime.UtcNow;
+
+                _dataContext.Auctions.Update(auction);
+                await _dataContext.SaveChangesAsync();
+
+                return auction.Id;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new AppException(e.Message);
+            }
+        }
+
+        public async Task<Guid> CloseAuction(Guid id)
+        {
+            try
+            {
+                var auction = await GetAuction(id);
+                if (auction == null)
+                {
+                    throw new AppException(ErrorMessage.IdNotExist);
+                }
+
+                // Check if the auction is ongoing
+                if (auction.Status != AuctionStatus.OnGoing)
+                {
+                    throw new AppException(ErrorMessage.AuctionNotOnGoing);
+                }
+
+                auction.Status = AuctionStatus.Completed;
+                auction.DateUpdate = DateTime.UtcNow;
+
+                _dataContext.Auctions.Update(auction);
+                await _dataContext.SaveChangesAsync();
+
+                return auction.Id;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new AppException(e.Message);
             }
         }
 

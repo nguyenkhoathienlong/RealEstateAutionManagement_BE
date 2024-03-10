@@ -37,5 +37,7 @@ namespace Service.Utilities
         public static string AuctionNotOngoing = "AUCTION_NOT_ONGOING";
         public static string UserCannotBidOwnAuction = "USER_CANNOT_BID_OWN_AUCTION";
         public static string BidNotHigherThanCurrent = "BID_NOT_HIGHER_THAN_CURRENT";
+        public static string AuctionNotApproved = "AUCTION_NOT_APPROVED";
+        public static string AuctionNotOnGoing = "AUCTION_NOT_ONGOING";
     }
 }
