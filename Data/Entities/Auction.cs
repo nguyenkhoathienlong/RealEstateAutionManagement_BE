@@ -34,5 +34,6 @@ namespace Data.Entities
         [ForeignKey("RealEstateId")]
         public RealEstate RealEstates { get; set; } = null!;
         public IList<Transaction>? Transactions { get; set; }
+        public IList<UserBid> UserBids { get; set; } = null!;
     }
 }

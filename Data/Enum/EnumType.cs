@@ -58,7 +58,8 @@ namespace Data.Enum
     {
         DepositFee,
         AnnualAccountFee,
-        Bid
+        Bid,
+        AuctionPay
     }
     public enum TransactionStatus
     {

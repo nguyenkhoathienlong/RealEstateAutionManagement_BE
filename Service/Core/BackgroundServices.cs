@@ -89,6 +89,22 @@ namespace Service.Core
                 {
                     auction.Status = AuctionStatus.Completed;
                     _logger.LogInformation($"Auction {auctionId} has been closed.");
+
+                    // Find the winner of the auction
+                    var highestBid = await _dataContext.UserBids
+                        .Where(x => x.AuctionId == auctionId && !x.IsDeposit)
+                        .OrderByDescending(x => x.Amount)
+                        .FirstOrDefaultAsync();
+
+                    // Create a notification for the winner
+                    var notification = new Notification
+                    {
+                        Title = "Chúc mừng bạn đã thắng phiên đấu giá",
+                        Description = $"Bạn đã thắng phiên đấu giá cho {auction.RealEstates.Name} với giá {highestBid!.Amount}.",
+                        UserId = highestBid.UserId
+                    };
+                    _dataContext.Notifications.Add(notification);
+                    await _dataContext.SaveChangesAsync();
                 }
                 else
                 {

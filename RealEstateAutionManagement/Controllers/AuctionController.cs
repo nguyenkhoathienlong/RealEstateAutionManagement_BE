@@ -127,5 +127,14 @@ namespace RealEstateAuctionManagement.Controllers
             var result = await _auctionService.CloseAuction(id);
             return Ok(result);
         }
+
+        [Authorize]
+        [HttpPost("{id}/pay")]
+        public async Task<IActionResult> PayForAuction(Guid id)
+        {
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _auctionService.PayForAuction(id, userId);
+            return Ok(result);
+        }
     }
 }

@@ -87,7 +87,7 @@ namespace Data.Migrations
 
                     b.HasIndex("RealEstateId");
 
-                    b.ToTable("Auctions");
+                    b.ToTable("Auctions", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.BankAccount", b =>
@@ -127,7 +127,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BankAccounts");
+                    b.ToTable("BankAccounts", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Category", b =>
@@ -155,7 +155,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Feedback", b =>
@@ -188,7 +188,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Feedbacks");
+                    b.ToTable("Feedbacks", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Notification", b =>
@@ -221,7 +221,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.RealEstate", b =>
@@ -277,7 +277,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RealEstates");
+                    b.ToTable("RealEstates", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.RealEstateImage", b =>
@@ -306,7 +306,7 @@ namespace Data.Migrations
 
                     b.HasIndex("RealEstateId");
 
-                    b.ToTable("RealEstateImages");
+                    b.ToTable("RealEstateImages", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Setting", b =>
@@ -341,7 +341,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Settings");
+                    b.ToTable("Settings", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Transaction", b =>
@@ -383,7 +383,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Transaction");
+                    b.ToTable("Transaction", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
@@ -457,7 +457,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.UserBid", b =>
@@ -493,7 +493,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserBids");
+                    b.ToTable("UserBids", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Auction", b =>

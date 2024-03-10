@@ -36,6 +36,7 @@ namespace Service.Core
         Task<Guid> PlaceBid(Guid auctionId, PlaceBidModel model, string userId);
         Task<Guid> OpenAuction(Guid id);
         Task<Guid> CloseAuction(Guid id);
+        Task<string> PayForAuction(Guid id, string userId);
     }
 
     public class AuctionService : IAuctionService
@@ -120,7 +121,33 @@ namespace Service.Core
                     throw new AppException(ErrorMessage.IdNotExist);
                 }
 
-                return _mapper.Map<Auction, AuctionViewModel>(data);
+                var viewModel = _mapper.Map<Auction, AuctionViewModel>(data);
+
+                // If the auction is OnGoing or Completed, get the user bids list
+                if (data.Status == AuctionStatus.OnGoing || data.Status == AuctionStatus.Completed)
+                {
+                    viewModel.UserBids = await _dataContext.UserBids
+                        .Where(x => x.AuctionId == id && !x.IsDeposit)
+                        .Select(x => _mapper.Map<UserBid, UserBidViewModel>(x))
+                        .ToListAsync();
+                }
+
+                // If the auction has completed, assign highestPrice and winnerId
+                if (data.Status == AuctionStatus.Completed)
+                {
+                    var highestBid = await _dataContext.UserBids
+                        .Where(x => x.AuctionId == id && !x.IsDeposit)
+                        .OrderByDescending(x => x.Amount)
+                        .FirstOrDefaultAsync();
+
+                    if (highestBid != null)
+                    {
+                        viewModel.HighestPrice = highestBid.Amount;
+                        viewModel.WinnerId = highestBid.UserId;
+                    }
+                }
+
+                return viewModel;
             }
             catch (Exception e)
             {
@@ -281,6 +308,19 @@ namespace Service.Core
                 if (realEstate == null)
                 {
                     throw new AppException(ErrorMessage.RealEstateNotExist);
+                }
+
+                var user = await _dataContext.Users
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == new Guid(userId));
+                if (user == null)
+                {
+                    throw new AppException(ErrorMessage.UserNameDoNotExist);
+                }
+
+                // Check if the user is verified
+                if (user.Status != UserStatus.Active)
+                {
+                    throw new AppException(ErrorMessage.UserNotVerified);
                 }
 
                 // Check if the real estate is approved
@@ -455,6 +495,19 @@ namespace Service.Core
             {
                 var httpContext = _httpContextAccessor.HttpContext!;
 
+                var user = await _dataContext.Users
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == new Guid(userId));
+                if (user == null)
+                {
+                    throw new AppException(ErrorMessage.UserNameDoNotExist);
+                }
+
+                // Check if the user is verified
+                if (user.Status != UserStatus.Active)
+                {
+                    throw new AppException(ErrorMessage.UserNotVerified);
+                }
+
                 var auction = await _dataContext.Auctions
                     .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
                 if (auction == null)
@@ -537,14 +590,19 @@ namespace Service.Core
                     transaction.Status = TransactionStatus.Successful;
                     transaction.DateUpdate = DateTime.UtcNow;
 
-                    var userBid = new UserBid
+                    // Check transaction type
+                    if (transaction.Type == TransactionType.DepositFee)
                     {
-                        Amount = transaction.Amount,
-                        IsDeposit = true,
-                        UserId = transaction.UserId,
-                        AuctionId = (Guid)transaction.AuctionId!
-                    };
-                    await _dataContext.AddAsync(userBid);
+                        var userBid = new UserBid
+                        {
+                            Amount = transaction.Amount,
+                            IsDeposit = true,
+                            UserId = transaction.UserId,
+                            AuctionId = (Guid)transaction.AuctionId!
+                        };
+                        await _dataContext.AddAsync(userBid);
+                    }
+
                     await _dataContext.SaveChangesAsync();
                 }
                 //VNPAY RETURN FAILED STATUS
@@ -555,7 +613,7 @@ namespace Service.Core
                     transaction.DateUpdate = DateTime.UtcNow;
                 }
                 _dataContext.Transaction.Update(transaction);
-                _dataContext.SaveChanges();
+                await _dataContext.SaveChangesAsync();
                 return callbackResponse;
             }
         }
@@ -584,6 +642,32 @@ namespace Service.Core
                 if (auction.CreateByUserId == new Guid(userId))
                 {
                     throw new AppException(ErrorMessage.UserCannotBidOwnAuction);
+                }
+
+                // Check if the user has registered for this auction
+                var existingRegistration = await _dataContext.UserBids
+                    .FirstOrDefaultAsync(x => x.UserId == new Guid(userId) && x.AuctionId == auctionId && x.IsDeposit);
+                if (existingRegistration == null)
+                {
+                    throw new AppException(ErrorMessage.UserNotRegisteredForAuction);
+                }
+
+                // Check if the bid is less than the starting price
+                if (model.Amount < auction.StartingPrice)
+                {
+                    throw new AppException(ErrorMessage.BidLessThanStartingPrice);
+                }
+
+                // Check if the bid is a multiple of the bid increment
+                if ((model.Amount - auction.StartingPrice) % auction.BidIncrement != 0)
+                {
+                    throw new AppException(ErrorMessage.BidNotMultipleOfIncrement);
+                }
+
+                // Check if the bid is less than the max bid increment, if it's not null
+                if (auction.MaxBidIncrement.HasValue && (model.Amount - auction.StartingPrice) > auction.MaxBidIncrement.Value)
+                {
+                    throw new AppException(ErrorMessage.BidGreaterThanMaxIncrement);
                 }
 
                 // Retrieve the highest bid for this auction
@@ -692,10 +776,97 @@ namespace Service.Core
                 auction.Status = AuctionStatus.Completed;
                 auction.DateUpdate = DateTime.UtcNow;
 
+                // Find the winner of the auction
+                var highestBid = await _dataContext.UserBids
+                    .Where(x => x.AuctionId == id && !x.IsDeposit)
+                    .OrderByDescending(x => x.Amount)
+                    .FirstOrDefaultAsync();
+
+                // Create a notification for the winner
+                var notification = new Notification
+                {
+                    Title = "Chúc mừng bạn đã thắng phiên đấu giá",
+                    Description = $"Bạn đã thắng phiên đấu giá cho {auction.RealEstates.Name} với giá {highestBid!.Amount}.",
+                    UserId = highestBid.UserId
+                };
+
+                _dataContext.Notifications.Add(notification);
+                await _dataContext.SaveChangesAsync();
+
                 _dataContext.Auctions.Update(auction);
                 await _dataContext.SaveChangesAsync();
 
                 return auction.Id;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new AppException(e.Message);
+            }
+        }
+
+        public async Task<string> PayForAuction(Guid id, string userId)
+        {
+            try
+            {
+                var httpContext = _httpContextAccessor.HttpContext!;
+
+                var user = await _dataContext.Users
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == new Guid(userId));
+                if (user == null)
+                {
+                    throw new AppException(ErrorMessage.UserNameDoNotExist);
+                }
+
+                var auction = await _dataContext.Auctions
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
+                if (auction == null)
+                {
+                    throw new AppException(ErrorMessage.IdNotExist);
+                }
+
+                // Check if the auction is completed
+                if (auction.Status != AuctionStatus.Completed)
+                {
+                    throw new AppException(ErrorMessage.AuctionNotCompleted);
+                }
+
+                // Check if the user is the winner of the auction
+                var winningBid = await _dataContext.UserBids
+                    .Where(x => x.AuctionId == id && !x.IsDeposit)
+                    .OrderByDescending(x => x.Amount)
+                    .FirstOrDefaultAsync();
+                if (winningBid == null || winningBid.UserId != new Guid(userId))
+                {
+                    throw new AppException(ErrorMessage.UserNotAuctionWinner);
+                }
+
+                // Calculate the remaining amount to be paid
+                var amount = winningBid.Amount - auction.Deposit;
+
+                var transaction = new Transaction
+                {
+                    Id = Guid.NewGuid(),
+                    Amount = amount,
+                    PaymentMethod = PaymentMethod.VnPay,
+                    Status = TransactionStatus.Pending,
+                    Type = TransactionType.AuctionPay,
+                    UserId = new Guid(userId),
+                    AuctionId = id
+                };
+
+                await _dataContext.Transaction.AddAsync(transaction);
+                await _dataContext.SaveChangesAsync();
+
+                var response = await _vnPayService.CreatePaymentUrl(userId, amount, transaction.Id, httpContext);
+                if (response.Equals(""))
+                {
+                    throw new AppException(ErrorMessage.PaymentRequestCreationError);
+                }
+
+                // Set schedule to fail the transaction in 15 minutes if still pending
+                BackgroundJob.Schedule<BackgroundServices>(s => s.CheckTransactionStatus(transaction.Id), TimeSpan.FromMinutes(15));
+                return response;
             }
             catch (Exception e)
             {

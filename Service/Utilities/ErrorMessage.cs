@@ -39,5 +39,12 @@ namespace Service.Utilities
         public static string BidNotHigherThanCurrent = "BID_NOT_HIGHER_THAN_CURRENT";
         public static string AuctionNotApproved = "AUCTION_NOT_APPROVED";
         public static string AuctionNotOnGoing = "AUCTION_NOT_ONGOING";
+        public static string UserNotVerified = "USER_NOT_VERIFIED";
+        public static string AuctionNotCompleted = "AUCTION_NOT_COMPLETED";
+        public static string UserNotAuctionWinner = "USER_NOT_AUCTION_WINNER";
+        public static string UserNotRegisteredForAuction = "USER_NOT_REGISTERED_FOR_AUCTION";
+        public static string BidNotMultipleOfIncrement = "BID_NOT_MULTIPLE_OF_INCREMENT";
+        public static string BidGreaterThanMaxIncrement = "BID_GREATER_THAN_MAX_INCREMENT";
+        public static string BidLessThanStartingPrice = "BID_LESS_THAN_STARTING_PRICE";
     }
 }

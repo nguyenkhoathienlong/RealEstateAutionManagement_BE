@@ -32,9 +32,9 @@ namespace Data.Models
         public Guid CreateByUserId { get; set; }
         public Guid? ApproveByUserId { get; set; }
         public Guid RealEstateId { get; set; }
-        //public float? HighestPrice { get; set; }
-        //public Guid? WinnerId { get; set; }
-        //public List<UserBidViewModel>? UserBids { get; set; }
+        public float? HighestPrice { get; set; }
+        public Guid? WinnerId { get; set; }
+        public List<UserBidViewModel>? UserBids { get; set; }
     }
 
     public class AuctionCreateRequestModel
