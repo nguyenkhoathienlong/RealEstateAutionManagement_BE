@@ -23,6 +23,7 @@ namespace Service.Mapper
 
             // Auction
             CreateMap<AuctionCreateModel, Auction>();
+            CreateMap<AuctionCreateRequestModel, Auction>();
             CreateMap<Auction, AuctionViewModel>();
             CreateMap<AuctionUpdateModel, Auction>()
                 .ForAllMembers(opt => opt.Condition((src, des, obj) => obj != null));
@@ -34,7 +35,7 @@ namespace Service.Mapper
                 .ForAllMembers(opt => opt.Condition((src, des, obj) => obj != null));
 
             // Category
-            CreateMap<CategoryModel, Category>();
+            CreateMap<CategoryCreateModel, Category>();
             CreateMap<Category, CategoryViewModel>();
             CreateMap<CategoryUpdateModel, Category>()
                 .ForAllMembers(opt => opt.Condition((src, des, obj) => obj != null));

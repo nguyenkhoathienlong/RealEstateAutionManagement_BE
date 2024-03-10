@@ -50,6 +50,7 @@ namespace Data.Entities
         public IList<Notification> Notifications { get; set; } = null!;
         public IList<Auction> AuctionCreated { get; set; } = null!;
         public IList<Auction> AuctionApproved { get; set; } = null!;
+        public IList<RealEstate> RealEstateApproved { get; set; } = null!;
         public IList<Feedback> Feedbacks { get; set; } = null!;
     }
 }

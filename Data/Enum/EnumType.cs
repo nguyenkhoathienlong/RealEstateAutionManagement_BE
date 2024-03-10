@@ -16,12 +16,60 @@ namespace Data.Enum
     {
         Staff,
         Guest,
-        Member
+        Member,
+        Admin
     }
     public enum UserStatus
     {
         Active,
         Inactive,
-        Banned
+        Banned,
+        Rejected
+    }
+    public enum AuctionStatus
+    {
+        Pending,
+        Approved,
+        OnGoing,
+        Completed,
+        Rejected,
+        Failed
+    }
+    public enum SettingDataUnit
+    {
+        Percent = 0,
+        Minutes = 1,
+        Hours = 2,
+        Days = 3,
+        Meters = 4,
+        Kilometers = 5,
+        Times = 6,
+        Default = 7,
+        Vnd = 8
+    }
+    public enum RealEstateStatus
+    {
+        Pending,
+        Approved,
+        Sold,
+        Rejected
+    }
+    public enum TransactionType
+    {
+        DepositFee,
+        AnnualAccountFee,
+        Bid,
+        AuctionPay
+    }
+    public enum TransactionStatus
+    {
+        Pending = 0,
+        Successful = 1,
+        Failed = -1
+    }
+    public enum PaymentMethod
+    {
+        VnPay,
+        None
     }
 }

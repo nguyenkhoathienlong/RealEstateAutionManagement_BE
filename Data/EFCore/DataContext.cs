@@ -42,6 +42,14 @@ namespace Data.EFCore
                 .WithMany(u => u.AuctionApproved)
                 .HasForeignKey(a => a.ApproveByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RealEstate>()
+                .HasOne(a => a.ApprovedByUser)
+                .WithMany(u => u.RealEstateApproved)
+                .HasForeignKey(a => a.ApproveByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //modelBuilder.SeedSettings();
         }
     }
 }

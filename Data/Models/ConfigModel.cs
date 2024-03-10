@@ -17,4 +17,11 @@
         public string? TokenString { get; set; }
         public long ExpiresInMilliseconds { get; set; }
     }
+
+    public class FirebaseModel
+    {
+        public string? FirebaseSDKFile { get; set; }
+        public string? ProjectId { get; set; }
+        public string? Bucket { get; set; }
+    }
 }

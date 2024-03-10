@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -17,22 +18,34 @@ namespace Data.Models
     {
         public string Key { get; set; } = null!;
         public string Value { get; set; } = null!;
-        public int DataUnit { get; set; }
+        public string Description { get; set; } = null!;
+        public SettingDataUnit DataUnit { get; set; }
     }
 
     public class SettingCreateModel
     {
         public string Key { get; set; } = null!;
         public string Value { get; set; } = null!;
-        public int DataUnit { get; set; }
+        public string Description { get; set; } = null!;
+        public SettingDataUnit DataUnit { get; set; }
     }
 
     public class SettingUpdateModel
     {
         public string Key { get; set; } = null!;
         public string Value { get; set; } = null!;
-        public int DataUnit { get; set; }
+        public string Description { get; set; } = null!;
+        public SettingDataUnit DataUnit { get; set; }
         [JsonIgnore]
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;
+    }
+
+    public class SettingQueryModel : QueryStringParameters
+    {
+        public SettingQueryModel()
+        {
+            OrderBy = "";
+        }
+        public string? Search { get; set; }
     }
 }

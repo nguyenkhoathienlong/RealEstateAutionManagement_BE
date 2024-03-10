@@ -18,7 +18,6 @@ namespace Data.Entities
         public User Users { get; set; } = null!;
         public Guid AuctionId { get; set; }
         [ForeignKey("AuctionId")]
-        public Auction? Auctions { get; set; }
-        public IList<Transaction>? Transactions { get; set; }
+        public Auction Auctions { get; set; } = null!;
     }
 }

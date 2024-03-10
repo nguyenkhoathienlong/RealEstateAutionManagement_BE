@@ -1,4 +1,5 @@
 ﻿using Data.Enum;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -29,7 +30,7 @@ namespace Data.Models
         public string? IdentityCardBackImage { get; set; }
         public string? Avatar { get; set; }
         public Role Role { get; set; }
-        public int Status { get; set; }
+        public UserStatus Status { get; set; }
     }
 
     public class UserCreateModel
@@ -47,7 +48,7 @@ namespace Data.Models
         public string? IdentityCardBackImage { get; set; }
         public string? Avatar { get; set; }
         public Role Role { get; set; }
-        public int Status { get; set; }
+        public UserStatus Status { get; set; }
     }
 
     public class UserUpdateModel
@@ -64,8 +65,10 @@ namespace Data.Models
         public string? IdentityCardFrontImage { get; set; }
         public string? IdentityCardBackImage { get; set; }
         public string? Avatar { get; set; }
+        [JsonIgnore]
         public Role Role { get; set; }
-        public int Status { get; set; }
+        [JsonIgnore]
+        public UserStatus Status { get; set; }
         [JsonIgnore]
         public DateTime DateUpdate { get; set; } = DateTime.UtcNow;
     }
@@ -104,5 +107,18 @@ namespace Data.Models
         public string? Avatar { get; set; }
         [JsonIgnore]
         public Role Role { get; set; }
+    }
+
+    public class IdentificationInformation
+    {
+        public string? IdentityNumber { get; set; }
+        public DateTime IdentityCardProvideDate { get; set; }
+        public IFormFile IdentityCardFrontImage { get; set; } = null!;
+        public IFormFile IdentityCardBackImage { get; set; } = null!;
+    }
+
+    public class ApprovedIdentificationDocument
+    {
+        public bool IsApproved { get; set; }
     }
 }

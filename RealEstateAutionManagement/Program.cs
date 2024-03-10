@@ -1,17 +1,29 @@
 using Data.Models;
+using Hangfire;
 using Microsoft.OpenApi.Models;
 using Service.Mapper;
-using UserManagement.Extensions;
-using UserManagement.Helpers;
+using Service.SignalR;
+using RealEstateAuctionManagement.Extensions;
+using RealEstateAuctionManagement.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.ConfigurePostgreSqlServer(builder.Configuration.GetSection("DbSetup").Get<DbSetupModel>());
+builder.Services.ConfigurePostgreSqlServer(builder.Configuration.GetSection("DbSetup").Get<DbSetupModel>()!);
 builder.Services.AddAutoMapper(typeof(MapperProfiles));
-builder.Services.AddCors();
+builder.Services.ConfigCors();
 builder.Services.ConfigureJWTToken(builder.Configuration.GetSection("JWT").Get<JwtModel>());
+builder.Services.ConfigureFirebaseServices(builder.Configuration.GetSection("Firebase").Get<FirebaseModel>()!);
 builder.Services.AddBusinessServices();
+builder.Services.ConfigureHangire(builder.Configuration.GetSection("DbSetup").Get<DbSetupModel>()!);
+builder.Services.ConfigureSignalR();
+builder.Services.AddHttpContextAccessor();
+
+// Logging
+builder.Services.AddLogging(loggingBuilder =>
+{
+    loggingBuilder.AddConsole();
+});
 
 builder.Services.AddControllers(op =>
 {
@@ -21,7 +33,7 @@ builder.Services.AddControllers(op =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
 {
-    option.SwaggerDoc("v1", new OpenApiInfo { Title = "UserManagement API", Version = "v1" });
+    option.SwaggerDoc("v2", new OpenApiInfo { Title = "REAS API", Version = "v2" });
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -49,23 +61,26 @@ builder.Services.AddSwaggerGen(option =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{ c.SwaggerEndpoint("/swagger/v2/swagger.json", "REAS API v2"); });
 
 app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseHangfireDashboard("/hangfire");
+
 app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.MapControllers();
+
+app.MapHub<SignalRHub>("/reasHub");
 
 app.Run();

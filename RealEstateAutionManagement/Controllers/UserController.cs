@@ -18,7 +18,7 @@ namespace RealEstateAuctionManagement.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("/login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login(UserRequest model)
         {
             var data = await _userService.Login(model);
@@ -26,7 +26,7 @@ namespace RealEstateAuctionManagement.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("/register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegisterModel model)
         {
             var data = await _userService.Register(model);
@@ -72,6 +72,51 @@ namespace RealEstateAuctionManagement.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var result = await _userService.Delete(id);
+            return Ok(result);
+        }
+
+        [HttpPut("upload-image-profile")]
+        public async Task<IActionResult> UpdateProfile(IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+            {
+                return BadRequest("File is null or empty");
+            }
+            if (Path.GetExtension(image.FileName) != ".png" && Path.GetExtension(image.FileName) != ".jpg")
+            {
+                return BadRequest("Only image files are allowed");
+            }
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _userService.UpdateProfileImage(userId, image);
+            return Ok(("Image upload successfully"));
+        }
+
+        [HttpPut("upload-identification-information")]
+        public async Task<IActionResult> UpdateIdentificationInformation([FromForm] IdentificationInformation model)
+        {
+            if (model == null)
+            {
+                return BadRequest("File is not null or empty");
+            }
+            if (Path.GetExtension(model?.IdentityCardFrontImage.FileName) != ".png" && Path.GetExtension(model?.IdentityCardFrontImage.FileName) != ".jpg")
+            {
+                return BadRequest("Identity Card Front only image files are allowed");
+            }
+            if (Path.GetExtension(model?.IdentityCardBackImage.FileName) != ".png" && Path.GetExtension(model?.IdentityCardBackImage.FileName) != ".jpg")
+            {
+                return BadRequest("Identity Card Back only image files are allowed");
+            }
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _userService.UploadDocument(userId, model);
+            return Ok("Image upload successfully");
+        }
+
+        //[Authorize(Roles = "Staff, Admin")]
+        [HttpPut("{id}/approve")]
+        public async Task<IActionResult> ApproveIdentificationDocument(Guid id, [FromBody]ApprovedIdentificationDocument model)
+        {
+            var userId = User.Claims.GetUserIdFromJwtToken();
+            var result = await _userService.ApproveIdentificationDocument(id, model, userId);
             return Ok(result);
         }
     }

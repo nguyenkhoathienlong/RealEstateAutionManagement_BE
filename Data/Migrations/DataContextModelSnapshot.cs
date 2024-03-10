@@ -49,9 +49,6 @@ namespace Data.Migrations
                     b.Property<float>("Deposit")
                         .HasColumnType("real");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -64,13 +61,13 @@ namespace Data.Migrations
                     b.Property<Guid>("RealEstateId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("RegistrationEndDate")
+                    b.Property<DateTime?>("RegistrationEndDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<float>("RegistrationFee")
                         .HasColumnType("real");
 
-                    b.Property<DateTime>("RegistrationStartDate")
+                    b.Property<DateTime?>("RegistrationStartDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("StartDate")
@@ -90,7 +87,7 @@ namespace Data.Migrations
 
                     b.HasIndex("RealEstateId");
 
-                    b.ToTable("Auctions");
+                    b.ToTable("Auctions", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.BankAccount", b =>
@@ -130,7 +127,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BankAccounts");
+                    b.ToTable("BankAccounts", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Category", b =>
@@ -158,7 +155,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Feedback", b =>
@@ -191,7 +188,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Feedbacks");
+                    b.ToTable("Feedbacks", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Notification", b =>
@@ -224,7 +221,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.RealEstate", b =>
@@ -236,6 +233,9 @@ namespace Data.Migrations
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid?>("ApproveByUserId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("ApproveTime")
                         .HasColumnType("timestamp with time zone");
@@ -249,6 +249,10 @@ namespace Data.Migrations
                     b.Property<DateTime>("DateUpdate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -259,16 +263,21 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ApproveByUserId");
+
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RealEstates");
+                    b.ToTable("RealEstates", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.RealEstateImage", b =>
@@ -297,7 +306,7 @@ namespace Data.Migrations
 
                     b.HasIndex("RealEstateId");
 
-                    b.ToTable("RealEstateImages");
+                    b.ToTable("RealEstateImages", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Setting", b =>
@@ -315,6 +324,10 @@ namespace Data.Migrations
                     b.Property<DateTime>("DateUpdate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -328,7 +341,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Settings");
+                    b.ToTable("Settings", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Transaction", b =>
@@ -339,6 +352,9 @@ namespace Data.Migrations
 
                     b.Property<float>("Amount")
                         .HasColumnType("real");
+
+                    b.Property<Guid?>("AuctionId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("DateCreate")
                         .HasColumnType("timestamp with time zone");
@@ -358,19 +374,16 @@ namespace Data.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("UserBidId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserBidId");
+                    b.HasIndex("AuctionId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Transaction");
+                    b.ToTable("Transaction", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
@@ -444,7 +457,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.UserBid", b =>
@@ -480,7 +493,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserBids");
+                    b.ToTable("UserBids", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Auction", b =>
@@ -544,6 +557,11 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.RealEstate", b =>
                 {
+                    b.HasOne("Data.Entities.User", "ApprovedByUser")
+                        .WithMany("RealEstateApproved")
+                        .HasForeignKey("ApproveByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Data.Entities.Category", "Categories")
                         .WithMany("RealEstates")
                         .HasForeignKey("CategoryId")
@@ -555,6 +573,8 @@ namespace Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ApprovedByUser");
 
                     b.Navigation("Categories");
 
@@ -574,9 +594,9 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Transaction", b =>
                 {
-                    b.HasOne("Data.Entities.UserBid", "UserBid")
+                    b.HasOne("Data.Entities.Auction", "Auctions")
                         .WithMany("Transactions")
-                        .HasForeignKey("UserBidId");
+                        .HasForeignKey("AuctionId");
 
                     b.HasOne("Data.Entities.User", "Users")
                         .WithMany("Transactions")
@@ -584,7 +604,7 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UserBid");
+                    b.Navigation("Auctions");
 
                     b.Navigation("Users");
                 });
@@ -606,6 +626,11 @@ namespace Data.Migrations
                     b.Navigation("Auctions");
 
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Data.Entities.Auction", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Data.Entities.Category", b =>
@@ -632,16 +657,13 @@ namespace Data.Migrations
 
                     b.Navigation("Notifications");
 
+                    b.Navigation("RealEstateApproved");
+
                     b.Navigation("RealEstates");
 
                     b.Navigation("Transactions");
 
                     b.Navigation("UserBids");
-                });
-
-            modelBuilder.Entity("Data.Entities.UserBid", b =>
-                {
-                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }
