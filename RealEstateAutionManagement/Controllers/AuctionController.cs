@@ -112,15 +112,15 @@ namespace RealEstateAuctionManagement.Controllers
             return Ok(auctionId);
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPut("{id}/open")]
+        [Authorize(Roles = "Staff, Admin")]
+        [HttpPatch("{id}/open")]
         public async Task<IActionResult> OpenAuction(Guid id)
         {
             var result = await _auctionService.OpenAuction(id);
             return Ok(result);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Staff, Admin")]
         [HttpPatch("{id}/close")]
         public async Task<IActionResult> CloseAuction(Guid id)
         {
