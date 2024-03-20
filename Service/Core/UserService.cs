@@ -107,6 +107,9 @@ namespace Service.Core
                     var role = Role.Member;
                     model.Role = role;
                     var dataUser = _mapper.Map<UserRegisterModel, User>(model);
+
+                    dataUser.IdentityCardProvideDate = dataUser.IdentityCardProvideDate.ToUniversalTime();
+
                     await _dataContext.Users.AddAsync(dataUser);
                     await _dataContext.SaveChangesAsync();
                     await transaction.CommitAsync();

@@ -246,6 +246,10 @@ namespace Service.Core
                 }
 
                 var updateData = _mapper.Map(model, checkExistAuction);
+
+                updateData.StartDate = updateData.StartDate.ToUniversalTime();
+                updateData.EndDate = updateData.EndDate.ToUniversalTime();
+
                 _dataContext.Auctions.Update(updateData);
                 await _dataContext.SaveChangesAsync();
                 return checkExistAuction.Id;
@@ -370,6 +374,9 @@ namespace Service.Core
                 }
 
                 var auction = _mapper.Map<AuctionCreateRequestModel, Auction>(auctionCreateModel);
+
+                auction.StartDate = auction.StartDate.ToUniversalTime();
+                auction.EndDate = auction.EndDate.ToUniversalTime();
 
                 // Get percent from settings
                 var registrationFeePercent = float.Parse(_dataContext.Settings.FirstOrDefault(x => x.Key == "REGISTRATION_FEE_PERCENT")?.Value ?? "0") / 100;
