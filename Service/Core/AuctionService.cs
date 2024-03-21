@@ -525,7 +525,7 @@ namespace Service.Core
                 // Check if the auction is approved
                 if (auction.Status != AuctionStatus.Approved)
                 {
-                    throw new AppException(ErrorMessage.RealEstateNotApproved);
+                    throw new AppException(ErrorMessage.AuctionNotApproved);
                 }
 
                 // Check if the user is the owner of the auction
@@ -768,7 +768,9 @@ namespace Service.Core
         {
             try
             {
-                var auction = await GetAuction(id);
+                var auction = await _dataContext.Auctions
+                    .Include(x => x.RealEstates)
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
                 if (auction == null)
                 {
                     throw new AppException(ErrorMessage.IdNotExist);
@@ -790,15 +792,18 @@ namespace Service.Core
                     .FirstOrDefaultAsync();
 
                 // Create a notification for the winner
-                var notification = new Notification
+                if (highestBid != null)
                 {
-                    Title = "Chúc mừng bạn đã thắng phiên đấu giá",
-                    Description = $"Bạn đã thắng phiên đấu giá cho {auction.RealEstates.Name} với giá {highestBid!.Amount}.",
-                    UserId = highestBid.UserId
-                };
+                    var notification = new Notification
+                    {
+                        Title = "Chúc mừng bạn đã thắng phiên đấu giá",
+                        Description = $"Bạn đã thắng phiên đấu giá cho {auction.RealEstates.Name} với giá {highestBid!.Amount}.",
+                        UserId = highestBid.UserId
+                    };
 
-                _dataContext.Notifications.Add(notification);
-                await _dataContext.SaveChangesAsync();
+                    _dataContext.Notifications.Add(notification);
+                    await _dataContext.SaveChangesAsync(); 
+                }
 
                 _dataContext.Auctions.Update(auction);
                 await _dataContext.SaveChangesAsync();
