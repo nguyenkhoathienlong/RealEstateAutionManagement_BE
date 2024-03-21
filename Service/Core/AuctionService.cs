@@ -802,7 +802,10 @@ namespace Service.Core
                     };
 
                     _dataContext.Notifications.Add(notification);
-                    await _dataContext.SaveChangesAsync(); 
+                    await _dataContext.SaveChangesAsync();
+
+                    // Change status of real estate to sold
+                    auction.RealEstates.Status = RealEstateStatus.Sold;
                 }
 
                 _dataContext.Auctions.Update(auction);

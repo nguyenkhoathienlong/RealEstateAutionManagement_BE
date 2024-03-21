@@ -100,7 +100,7 @@ namespace RealEstateAuctionManagement.Controllers
         public async Task<IActionResult> PaymentCallback()
         {
             var result = await _auctionService.PaymentCallback(Request.Query);
-            return Ok(result);
+            return Redirect("https://auction-fe-njhq.vercel.app/home");
         }
 
         [Authorize]

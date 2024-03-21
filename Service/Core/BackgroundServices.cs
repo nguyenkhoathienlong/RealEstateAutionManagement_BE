@@ -80,7 +80,9 @@ namespace Service.Core
 
         public async Task CloseAuction(Guid auctionId)
         {
-            var auction = await _dataContext.Auctions.FindAsync(auctionId);
+            var auction = await _dataContext.Auctions
+                .Include(x => x.RealEstates)
+                .FirstOrDefaultAsync(x => x.Id == auctionId);
             if (auction != null && auction.Status == AuctionStatus.OnGoing)
             {
                 // Check if there is more than one bid
@@ -97,14 +99,20 @@ namespace Service.Core
                         .FirstOrDefaultAsync();
 
                     // Create a notification for the winner
-                    var notification = new Notification
+                    if (highestBid != null)
                     {
-                        Title = "Chúc mừng bạn đã thắng phiên đấu giá",
-                        Description = $"Bạn đã thắng phiên đấu giá cho {auction.RealEstates.Name} với giá {highestBid!.Amount}.",
-                        UserId = highestBid.UserId
-                    };
-                    _dataContext.Notifications.Add(notification);
-                    await _dataContext.SaveChangesAsync();
+                        var notification = new Notification
+                        {
+                            Title = "Chúc mừng bạn đã thắng phiên đấu giá",
+                            Description = $"Bạn đã thắng phiên đấu giá cho {auction.RealEstates.Name} với giá {highestBid!.Amount}.",
+                            UserId = highestBid.UserId
+                        };
+                        _dataContext.Notifications.Add(notification);
+                        await _dataContext.SaveChangesAsync();
+
+                        // Change status of real estate to sold
+                        auction.RealEstates.Status = RealEstateStatus.Sold;
+                    }
                 }
                 else
                 {
