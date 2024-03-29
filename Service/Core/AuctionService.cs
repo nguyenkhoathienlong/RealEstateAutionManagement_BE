@@ -703,6 +703,11 @@ namespace Service.Core
                 await _dataContext.UserBids.AddAsync(userBid);
                 await _dataContext.SaveChangesAsync();
 
+                // Retrieve the updated list of user bids for this auction
+                var updatedUserBids = await _dataContext.UserBids
+                    .Where(x => x.AuctionId == auctionId && !x.IsDeposit)
+                    .ToListAsync();
+
                 // Create a new transaction
                 var transaction = new Transaction
                 {
@@ -719,7 +724,7 @@ namespace Service.Core
                 await _dataContext.SaveChangesAsync();
 
                 // Send SignalR message to update highest bid
-                await _hubContext.Clients.Group(auctionId.ToString()).SendAsync("UpdateHighestBid", model.Amount);
+                await _hubContext.Clients.Group(auctionId.ToString()).SendAsync("UpdateHighestBid", model.Amount, updatedUserBids);
 
                 // Return the auction ID
                 return auctionId;
