@@ -108,11 +108,13 @@ namespace Service.Core
                 if (user.Role == Role.Member)
                 {
                     queryData = _dataContext.RealEstates
+                        .Include(x=>x.RealEstateImages)
                         .Where(x => !x.IsDeleted && x.UserId == user.Id);
                 }
                 else
                 {
                     queryData = _dataContext.RealEstates
+                        .Include(x => x.RealEstateImages)
                         .Where(x => !x.IsDeleted);
                 }
 
@@ -335,6 +337,7 @@ namespace Service.Core
             {
                 var data = await _dataContext
                     .RealEstates
+                    .Include(x => x.RealEstateImages)
                     .Where(x => !x.IsDeleted && x.Id == id)
                     .SingleOrDefaultAsync();
                 if (data == null) throw new AppException(ErrorMessage.IdNotExist);

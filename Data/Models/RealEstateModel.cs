@@ -1,4 +1,5 @@
-﻿using Data.Enum;
+﻿using Data.Entities;
+using Data.Enum;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace Data.Models
         public Guid CategoryId { get; set; }
         public Guid UserId { get; set; }
         public Guid? ApproveByUserId { get; set; }
+        public IList<RealEstateImageViewModel> RealEstateImages { get; set; } = null!;
     }
 
     public class RealEstateCreateModel

@@ -35,6 +35,7 @@ namespace Data.Models
         public float? HighestPrice { get; set; }
         public Guid? WinnerId { get; set; }
         public List<UserBidViewModel>? UserBids { get; set; }
+        public RealEstateViewModel RealEstates { get; set; } = null!;
     }
 
     public class AuctionCreateRequestModel

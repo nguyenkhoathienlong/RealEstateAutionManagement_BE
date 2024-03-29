@@ -83,6 +83,8 @@ namespace Service.Core
             try
             {
                 var queryData = _dataContext.Auctions
+                    .Include(x => x.RealEstates)
+                    .ThenInclude(x=>x.RealEstateImages)
                     .Where(x => !x.IsDeleted);
 
                 if (string.IsNullOrEmpty(userRole) || userRole == Role.Member.ToString())
@@ -904,6 +906,8 @@ namespace Service.Core
             {
                 var data = await _dataContext
                     .Auctions
+                    .Include(x=>x.RealEstates)
+                    .ThenInclude(x=>x.RealEstateImages)
                     .Where(x => !x.IsDeleted && x.Id == id)
                     .SingleOrDefaultAsync();
                 if (data == null) throw new AppException(ErrorMessage.IdNotExist);
