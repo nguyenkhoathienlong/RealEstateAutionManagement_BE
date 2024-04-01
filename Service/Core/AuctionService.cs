@@ -673,17 +673,17 @@ namespace Service.Core
                     throw new AppException(ErrorMessage.BidNotMultipleOfIncrement);
                 }
 
-                // Check if the bid is less than the max bid increment, if it's not null
-                if (auction.MaxBidIncrement.HasValue && (model.Amount - auction.StartingPrice) > auction.MaxBidIncrement.Value)
-                {
-                    throw new AppException(ErrorMessage.BidGreaterThanMaxIncrement);
-                }
-
                 // Retrieve the highest bid for this auction
                 var highestBid = await _dataContext.UserBids
                     .Where(x => x.AuctionId == auctionId && !x.IsDeposit)
                     .OrderByDescending(x => x.Amount)
                     .FirstOrDefaultAsync();
+
+                // Check if the bid is less than the max bid increment, if it's not null
+                if (auction.MaxBidIncrement.HasValue && highestBid != null && (model.Amount - highestBid.Amount) > auction.MaxBidIncrement.Value)
+                {
+                    throw new AppException(ErrorMessage.BidGreaterThanMaxIncrement);
+                }
 
                 // Check if the new bid is higher than the current highest bid
                 if (highestBid != null && model.Amount <= highestBid.Amount)
