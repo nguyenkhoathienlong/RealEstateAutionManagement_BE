@@ -476,6 +476,8 @@ namespace Service.Core
             try
             {
                 var queryData = _dataContext.Auctions
+                    .Include(x => x.RealEstates)
+                    .ThenInclude(x => x.RealEstateImages)
                     .Where(x => !x.IsDeleted && x.CreateByUserId == new Guid(userId));
 
                 var sortData = _sortHelper.ApplySort(queryData, query.OrderBy!);
