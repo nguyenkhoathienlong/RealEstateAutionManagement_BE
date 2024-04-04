@@ -79,10 +79,6 @@ namespace Data.Models
 
     public class RealEstateQueryModel : QueryStringParameters
     {
-        public RealEstateQueryModel()
-        {
-            OrderBy = "";
-        }
         public string? Search { get; set; }
     }
 

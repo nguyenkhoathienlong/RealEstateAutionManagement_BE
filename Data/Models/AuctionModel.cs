@@ -106,10 +106,6 @@ namespace Data.Models
 
     public class AuctionQueryModel : QueryStringParameters
     {
-        public AuctionQueryModel()
-        {
-            OrderBy = "";
-        }
         public string? Search { get; set; }
     }
 

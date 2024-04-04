@@ -480,7 +480,7 @@ namespace Service.Core
                     .ThenInclude(x => x.RealEstateImages)
                     .Where(x => !x.IsDeleted && x.CreateByUserId == new Guid(userId));
 
-                var sortData = _sortHelper.ApplySort(queryData, query.OrderBy!);
+                var sortData = _sortHelper.ApplySort(queryData, "Status");
 
                 var data = await sortData.ToPagedListAsync(query.PageIndex, query.PageSize);
 
