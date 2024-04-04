@@ -13,6 +13,8 @@ namespace Data.Entities
         public string Name { get; set; } = null!;
         public string Address { get; set; } = null!;
         public string Description { get; set; } = null!;
+        public string Acreage { get; set; } = null!;
+        public double Pricing { get; set; } 
         public string? LinkAttachment { get; set; }
         public DateTime? ApproveTime { get; set; }
         public RealEstateStatus Status { get; set; } = RealEstateStatus.Pending;
